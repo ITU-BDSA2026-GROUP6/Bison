@@ -41,7 +41,7 @@ class Program
            Observation observation = new Observation
             {
                 ObservationText = message,
-                Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                 Author = Environment.UserName
             };
 
