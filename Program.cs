@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 
+// Observation Class containing relevant information.
 public class Observation
 {
     public string Author { get; set; } = string.Empty;
