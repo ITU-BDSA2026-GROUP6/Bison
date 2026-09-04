@@ -1,12 +1,11 @@
-﻿using System;
-using System.IO;
-using CsvHelper;
-using System.Globalization;
+﻿using SimpleDB;
 
-public record Cheep(string Author, string Message, long Timestamp);
+public record Cheep(string Author, string Observation, long Timestamp);
 
 class Program
 {
+    static readonly IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
+    
     static void Main(string [] args)
     {
         try
@@ -19,24 +18,12 @@ class Program
             {
                 Console.WriteLine("Invalid command. Use 'observe' followed by observation text.");
             }
-
-            string filePath = Path.Combine("CSVfiles", "bison_observe_cli_db.csv");
-
-            using StreamReader reader = new(filePath);
-            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-
-            csv.Read();
-            csv.ReadHeader();
-
-            while (csv.Read())
+            
+            foreach (Cheep cheep in database.Read())
             {
-                string author = csv.GetField<string>("Author")!;
-                string message = csv.GetField<string>("Observation")!;
-                long timestamp = csv.GetField<long>("Timestamp");
-
-                Cheep cheep = new Cheep(author, message, timestamp);
-                Console.WriteLine($"Author: {cheep.Author}, Observation: {cheep.Message}, Timestamp: {cheep.Timestamp}");
+                Console.WriteLine($"Author: {cheep.Author}, Observation: {cheep.Observation}, Timestamp: {cheep.Timestamp}");
             }
+            
         }
         catch (Exception e)
         {
@@ -48,14 +35,9 @@ class Program
     {
         Cheep cheep = new Cheep(Environment.UserName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-        string filePath = Path.Combine("CSVfiles", "bison_observe_cli_db.csv");
-
         try
         {
-            using StreamWriter writer = new(filePath, append: true);
-            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csv.WriteRecord(cheep);
-            csv.NextRecord();
+            database.Store(cheep);
             Console.WriteLine("Observation saved successfully.");
         }
         catch (Exception e)
