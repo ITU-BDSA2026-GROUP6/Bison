@@ -16,18 +16,18 @@ class Program
             }
             else
             {
-                Console.WriteLine("Invalid command. Use 'observe' followed by observation text.");
+                UserInterface.DisplayInvalidCommandMessage();
             }
             
             foreach (Cheep cheep in database.Read())
             {
-                Console.WriteLine($"Author: {cheep.Author}, Observation: {cheep.Observation}, Timestamp: {cheep.Timestamp}");
+                UserInterface.DisplayObservations(new Cheep[] { cheep });
             }
             
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Couldn't read file: {e.Message}");
+            UserInterface.DisplayReadError(e);
         }
     }
 
@@ -38,11 +38,11 @@ class Program
         try
         {
             database.Store(cheep);
-            Console.WriteLine("Observation saved successfully.");
+            UserInterface.DisplaySuccess();
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Couldn't write to file: {e.Message}");
+           UserInterface.DisplayWriteError(e);
         }
     }
 }
