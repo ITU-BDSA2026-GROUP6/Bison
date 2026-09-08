@@ -1,10 +1,35 @@
 public static class UserInterface
 {
-    public static void DisplayObservations(IEnumerable<Cheep> observations)
+    public static void DisplayObservations(IEnumerable<Observation> observations)
     {
-        foreach (Cheep cheep in observations)
+        foreach (Observation observation in observations)
         {
-            Console.WriteLine($"Author: {cheep.Author}, Observation: {cheep.Observation}, Timestamp: {cheep.Timestamp}");
+            System.Console.WriteLine(
+                $"ID: {observation.ObsID}, " +
+                $"Author: {observation.Author}, " +
+                $"Observation: {observation.Observation}, " +
+                $"Timestamp: {observation.Timestamp}"
+            );
+        }
+    }
+
+    public static void DisplayDiscussion(Observation observation, IEnumerable<Comment> comments)
+    {
+        System.Console.WriteLine(
+            $"ID: {observation.ObsID}, " +
+            $"Author: {observation.Author}, " +
+            $"Observation: {observation.Observation}, " +
+            $"Timestamp: {observation.Timestamp}"
+        );
+
+        foreach (Comment c in comments)
+        {
+            System.Console.WriteLine(
+                $"Author: {c.Author}, " +
+                $"Comment: {c.CommentText}, " +
+                $"Timestamp: {c.Timestamp}"
+            );
+            
         }
     }
 
