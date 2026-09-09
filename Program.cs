@@ -1,4 +1,4 @@
-﻿using Commandline;
+﻿using CommandLine;
 using SimpleDB;
 
 public class Cheep
@@ -87,18 +87,30 @@ class Program
 {
     Parser.Default.ParseArguments<ObserveOptions, CommentOptions, ReadOptions, DiscussionOptions>(args).MapResult(
             (ObserveOptions options) =>
-                Observe(string.Join(" ", options.Observation)),
+            {
+                Observe(string.Join(" ", options.Observation));
+                return 0;
+            },
 
             (CommentOptions options) =>
+            {
                 Comment(
                     string.Join(" ", options.Comment),
-                    options.ObsID),
+                    options.ObsID);
+                return 0;
+            },
 
             (ReadOptions options) =>
-                Read(),
+            {
+                Read();
+                return 0;
+            },
 
             (DiscussionOptions options) =>
-                Discussion(options.ObsID),
+            {
+                Discussion(options.ObsID);
+                return 0;
+            },
 
             errors =>
             {
@@ -207,24 +219,24 @@ class Program
     }
     
     static void Discussion(long obsID)
+{
+    try
     {
-        try
+        var observations = database.Read().FirstOrDefault(o => o.ObsID == obsID);
+        if (observations == null)
         {
-            var observations = database.Read().firstOrDefault(o => o.ObsID == obsID);
-            if (observations == null)
-            {
-                System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
-                return;            
-        }
-        var comments = commentDatabase.Read().Where(c => c.ObsID == obsID);
-        UserInterface.DisplayObservations(new List<Observation> { observations });
-        UserInterface.DisplayComments(comments);
-        } catch (Exception e)
-        {
-            UserInterface.DisplayReadError(e);
+            System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
             return;
         }
+        var comments = commentDatabase.Read().Where(c => c.ObsID == obsID);
+        UserInterface.DisplayDiscussion(observations, comments);
     }
+    catch (Exception e)
+    {
+        UserInterface.DisplayReadError(e);
+        return;
+    }
+}
 
 
     static void DisplayStoredObservations()
