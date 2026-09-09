@@ -54,7 +54,7 @@ public class ObserveOptions
 [Verb("comment", HelpText = "Store a new comment.")]
 public class CommentOptions
 {
-    [Value(0, MetaName = "comment", Required = true,
+    [Value(0, MetaName = "comment", Required = true, Max = 1,
         HelpText = "The comment text.")]
     public IEnumerable<string> Comment { get; set; } = [];
 
@@ -78,7 +78,6 @@ public class DiscussionOptions
 
 class Program
 {
-    static long nextObservationID = 1;
     static readonly IDatabaseRepository<Observation> database = new CSVDatabase<Observation>(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
     static readonly IDatabaseRepository<Comment> commentDatabase = new CSVDatabase<Comment>(Path.Combine("CSVfiles", "bison_comment_cli_db.csv"));
     
@@ -135,7 +134,7 @@ class Program
     static void Observe(string message)
     {
         Observation observation = new Observation(
-            nextObservationID,
+            GetNextObservationID(),
             Environment.UserName,
             message,
             DateTimeOffset.UtcNow.ToUnixTimeSeconds());
