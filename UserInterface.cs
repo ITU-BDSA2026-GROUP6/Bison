@@ -7,7 +7,7 @@ public static class UserInterface
             System.Console.WriteLine(
                 $"ID: {observation.ObsID}, " +
                 $"Author: {observation.Author}, " +
-                $"Observation: {observation.Observation}, " +
+               $"Observation: {observation.Text}, " +
                 $"Timestamp: {observation.Timestamp}"
             );
         }
@@ -18,7 +18,7 @@ public static class UserInterface
         System.Console.WriteLine(
             $"ID: {observation.ObsID}, " +
             $"Author: {observation.Author}, " +
-            $"Observation: {observation.Observation}, " +
+           $"Observation: {observation.Text}, " +
             $"Timestamp: {observation.Timestamp}"
         );
 
@@ -26,7 +26,7 @@ public static class UserInterface
         {
             System.Console.WriteLine(
                 $"Author: {c.Author}, " +
-                $"Comment: {c.CommentText}, " +
+                $"Comment: {c.Text}, " +
                 $"Timestamp: {c.Timestamp}"
             );
             
