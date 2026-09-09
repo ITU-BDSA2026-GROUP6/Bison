@@ -1,10 +1,15 @@
 using CsvHelper;
+using CsvHelper.Configuration;
 using System.Globalization;
 
 namespace SimpleDB;
 public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 {
     private readonly string _filePath;
+    private static readonly CsvConfiguration Config = new(CultureInfo.InvariantCulture)
+    {
+        PrepareHeaderForMatch = args => args.Header.ToLower(),
+    };
 
     public CSVDatabase(string filePath)
     {
@@ -14,7 +19,7 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
     public IEnumerable<T> Read(int? limit = null)
     {
         using StreamReader reader = new(_filePath);
-        using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
+        using CsvReader csv = new(reader, Config);
 
         List<T> records = csv.GetRecords<T>().ToList();
 
@@ -28,8 +33,16 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 
     public void Store(T record)
     {
+        bool needsHeader = !File.Exists(_filePath) || new FileInfo(_filePath).Length == 0;
+
         using StreamWriter writer = new(_filePath, append: true);
-        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+        using var csv = new CsvWriter(writer, Config);
+
+        if (needsHeader)
+        {
+            csv.WriteHeader<T>();
+            csv.NextRecord();
+        }
 
         csv.WriteRecord(record);
         csv.NextRecord();

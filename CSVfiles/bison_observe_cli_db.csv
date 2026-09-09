@@ -1,15 +1,2 @@
-Author,Observation,Timestamp
-ropf,"A bird at DR Byen",1690891760
-adho,"I think that is a Heron at DR Byen",1690978778
-edka,"Ardea cinerea at DR Byen",1690979858
-august,fugl at DR-byen,1787841495
-mikkelaagaard,Endelig test,1788370755
-mikkelaagaard,helt frisk test,1788371044
-mikkelaagaard,Endelig test,1788371399
-mikkelaagaard,helt ny test,1788372032
-mikkelaagaard,Endelig test,1788372158
-mikkelaagaard,Endelig test,1788372291
-mikkelaagaard,ny fugl,1788372438
-mikkelaagaard,ny fugl,1788372480
-mikkelaagaard,Endelig test,1788372547
-august,Bird at DRByen,1788505102
+obsID,author,text,timestamp
+1,mikkelaagaard,test observation,1788958489
