@@ -1,0 +1,31 @@
+name: Issue Labeling
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  label-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Add label Bug
+      if: contains(github.event.issue.title,'[BUG]')
+      uses: actions-ecosystem/action-add-label@v1
+      with:
+        labels: bug
+
+    - name: Add label Feature
+      if: contains(github.event.issue.title,'[FEATURE]')
+      uses: actions-ecosystem/action-add-label@v1
+      with:
+        labels: feature
+
+    - name: Add label Bug
+      if: contains(github.event.issue.title,'[TEST]')
+      uses: actions-ecosystem/action-add-label@v1
+      with:
+        labels: testing
