@@ -12,20 +12,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Add label Bug
-      if: contains(github.event.issue.title,'[BUG]')
-      uses: actions-ecosystem/action-add-label@v1
-      with:
-        labels: bug
+      - name: Add label Bug
+        if: contains(github.event.issue.title,'[BUG]')
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: bug
 
-    - name: Add label Feature
-      if: contains(github.event.issue.title,'[FEATURE]')
-      uses: actions-ecosystem/action-add-label@v1
-      with:
-        labels: feature
+      - name: Add label Feature
+        if: contains(github.event.issue.title,'[FEATURE]')
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: feature
 
-    - name: Add label Bug
-      if: contains(github.event.issue.title,'[TEST]')
-      uses: actions-ecosystem/action-add-label@v1
-      with:
-        labels: testing
+      - name: Add label Bug
+        if: contains(github.event.issue.title,'[TEST]')
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: testing
