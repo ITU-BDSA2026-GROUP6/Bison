@@ -1,3 +1,4 @@
+using System.Globalization;
 public static class UserInterface
 {
     public static void DisplayObservations(IEnumerable<Observation> observations)
@@ -8,7 +9,7 @@ public static class UserInterface
                 $"ID: {observation.ObsID}, " +
                 $"Author: {observation.Author}, " +
                $"Observation: {observation.Text}, " +
-                $"Timestamp: {observation.Timestamp}"
+                $"Timestamp: {UserInterface.ConvertTimestampToDateTimeString(observation.Timestamp)}"
             );
         }
     }
@@ -51,5 +52,11 @@ public static class UserInterface
     public static void DisplayReadError(Exception e)
     {
         Console.WriteLine($"Couldn't read file: {e.Message}");
+    }
+
+    public static string ConvertTimestampToDateTimeString(long timestamp)
+    {
+        DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+        return dateTimeOffset.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
     }
 }

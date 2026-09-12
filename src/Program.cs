@@ -1,6 +1,9 @@
 ﻿using CommandLine;
 using SimpleDB;
 
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("Bison.Tests")]
+
 public class Cheep
 {
     public string Author { get; }
@@ -76,10 +79,10 @@ public class DiscussionOptions
     public long ObsID { get; set; }
 }
 
-class Program
+public class Program
 {
-    static readonly IDatabaseRepository<Observation> database = new CSVDatabase<Observation>(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
-    static readonly IDatabaseRepository<Comment> commentDatabase = new CSVDatabase<Comment>(Path.Combine("CSVfiles", "bison_comment_cli_db.csv"));
+    internal static IDatabaseRepository<Observation> database = new CSVDatabase<Observation>(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
+    internal static IDatabaseRepository<Comment> commentDatabase = new CSVDatabase<Comment>(Path.Combine("CSVfiles", "bison_comment_cli_db.csv"));
     
     
     static void Main(string[] args)
@@ -190,7 +193,7 @@ class Program
     }
 }
     
-    static void Comment(string message, long obsID)
+    public static bool Comment(string message, long obsID)
     {
         try
         {
@@ -200,7 +203,7 @@ class Program
             if (!observationExists)
             {
                 System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
-                return;
+                return false;
             }
             Comment comment = new Comment(
                 obsID,
@@ -209,11 +212,12 @@ class Program
                 DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             commentDatabase.Store(comment);
             UserInterface.DisplaySuccess();
+            return true;
         
         } catch (Exception e)
         {
             UserInterface.DisplayReadError(e);
-            return;
+            return false;
         }
     }
     
