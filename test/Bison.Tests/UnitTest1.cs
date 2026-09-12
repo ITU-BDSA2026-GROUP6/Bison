@@ -58,7 +58,7 @@ public class UnitTest1
     {
         // Arrange
         long timestamp = 1700000000; // Example timestamp
-        string expectedDateTimeString = "2023-11-14 22.13.20"; // Expected output for the given timestamp
+        string expectedDateTimeString = "2023-11-14 22:13:20"; // Expected output for the given timestamp
 
         // Act
         string result = UserInterface.ConvertTimestampToDateTimeString(timestamp);

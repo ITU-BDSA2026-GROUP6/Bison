@@ -1,3 +1,4 @@
+using System.Globalization;
 public static class UserInterface
 {
     public static void DisplayObservations(IEnumerable<Observation> observations)
@@ -56,6 +57,6 @@ public static class UserInterface
     public static string ConvertTimestampToDateTimeString(long timestamp)
     {
         DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(timestamp);
-        return dateTimeOffset.ToString("yyyy-MM-dd HH:mm:ss");
+        return dateTimeOffset.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
     }
 }
