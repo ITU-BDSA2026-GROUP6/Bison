@@ -89,9 +89,9 @@ public class DiscussionOptions
 public class Program
 {
     internal static IDatabaseRepository<Observation> database = 
-    new CSVDatabase<Observation>.getInstance(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
+    CSVDatabase<Observation>.getInstance(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
     internal static IDatabaseRepository<Comment> commentDatabase = 
-    new CSVDatabase<Comment>.getInstance(Path.Combine("CSVfiles", "bison_comment_cli_db.csv"));
+    CSVDatabase<Comment>.getInstance(Path.Combine("CSVfiles", "bison_comment_cli_db.csv"));
     
     
     static void Main(string[] args)
