@@ -10,9 +10,9 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
     {
         PrepareHeaderForMatch = args => args.Header.ToLower(),
     };
-    
+
     private static CSVDatabase<T>? _instance;
-    public static CSVDatabase<T> GetInstance(string filePath)
+    public static CSVDatabase<T> getInstance(string filePath)
 {
     if (_instance == null)
     {
