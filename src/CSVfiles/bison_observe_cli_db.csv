@@ -1,8 +1,3 @@
-obsID,author,text,location,timestamp
-1,mikkelaagaard,test observation,Test Location,1788958489
-2,august,Saw a bird at DR byen. Test,Another Location,1789222614
-3,Vitusjh,Test,Sydhavnen,1789403542
-4,Vitusjh,Birdie here,Sydhavnen,17894037945,
-5,vitusjh,Dybbølsbro,Skade,1789404589
-6,Sverige,vitusjh,Ugle,1789404639
-7,Sverige,vitusjh,Ugle,1789404691
+obsID,location,author,text,timestamp
+1,Itu,vitusjh,Ugle,1789408402
+2,trapper,vitusjh,dyr,1789408770

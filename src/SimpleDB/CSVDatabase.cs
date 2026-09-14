@@ -12,7 +12,7 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
     };
 
     private static CSVDatabase<T>? _instance;
-    public static CSVDatabase<T> getInstance(string filePath)
+    public static CSVDatabase<T> GetInstance(string filePath)
 {
     if (_instance == null)
     {
@@ -57,5 +57,15 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 
         csv.WriteRecord(record);
         csv.NextRecord();
+    }
+
+    public class getInstance
+    {
+        private string v;
+
+        public getInstance(string v)
+        {
+            this.v = v;
+        }
     }
 }
