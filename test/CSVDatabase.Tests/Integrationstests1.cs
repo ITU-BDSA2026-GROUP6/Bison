@@ -8,7 +8,7 @@ public class IntegrationTests
     {
         // Arrange
         string temporaryFilePath = Path.Combine(Path.GetTempPath(), $"test_bison_observe_cli_db_{Guid.NewGuid()}.csv");
-        var database = new CSVDatabase<Observation>(temporaryFilePath);
+        var database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
 
         Observation observationToStore = new Observation(1, "test_author", "test_observation", 1700000000);
 
@@ -32,7 +32,7 @@ public class IntegrationTests
     {
         // Arrange
         string temporaryFilePath = Path.Combine(Path.GetTempPath(), $"test_bison_observe_cli_db_{Guid.NewGuid()}.csv");
-        var database = new CSVDatabase<Observation>(temporaryFilePath);
+        var database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
 
         Observation observation1 = new Observation(1, "author1", "observation1", 1700000000);
         Observation observation2 = new Observation(2, "author2", "observation2", 1700000001);

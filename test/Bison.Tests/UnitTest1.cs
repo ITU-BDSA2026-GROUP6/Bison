@@ -10,8 +10,8 @@ public class UnitTest1
         string temporaryFilePath = Path.Combine(Path.GetTempPath(), "test_bison_observe_cli_db.csv");
         string temporaryCommentFilePath = Path.Combine(Path.GetTempPath(), "test_bison_comment_cli_db.csv");
 
-        Program.database = new CSVDatabase<Observation>(temporaryFilePath);
-        Program.commentDatabase = new CSVDatabase<Comment>(temporaryCommentFilePath);
+        Program.database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
+        Program.commentDatabase = new CSVDatabase<Comment>.getInstance(temporaryCommentFilePath);
 
         Program.database.Store(new Observation(1, "seed", "seed obs", 1700000000));
 
@@ -36,8 +36,8 @@ public class UnitTest1
         string temporaryFilePath = Path.Combine(Path.GetTempPath(), "test_bison_observe_cli_db.csv");
         string temporaryCommentFilePath = Path.Combine(Path.GetTempPath(), "test_bison_comment_cli_db.csv");
 
-        Program.database = new CSVDatabase<Observation>(temporaryFilePath);
-        Program.commentDatabase = new CSVDatabase<Comment>(temporaryCommentFilePath);
+        Program.database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
+        Program.commentDatabase = new CSVDatabase<Comment>.getInstance(temporaryCommentFilePath);
 
         Program.database.Store(new Observation(1, "seed", "seed obs", 1700000000));
 

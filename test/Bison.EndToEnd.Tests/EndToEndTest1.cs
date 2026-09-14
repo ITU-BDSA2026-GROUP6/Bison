@@ -37,7 +37,7 @@ public class EndToEndTest1
         string workingDirectory = Path.Combine(Path.GetTempPath(), $"Bison_e2e_test_{Guid.NewGuid()}");
         Directory.CreateDirectory(Path.Combine(workingDirectory, "CSVfiles"));
 
-        var db = new CSVDatabase<Observation>(Path.Combine(workingDirectory, "CSVfiles", "bison_observe_cli_db.csv"));
+        var db = new CSVDatabase<Observation>.getInstance(Path.Combine(workingDirectory, "CSVfiles", "bison_observe_cli_db.csv"));
         db.Store(new Observation(1, "August", "saw a penguin", 1700000000));
 
         // Act. Run the Bison.CLI with the "read" command
