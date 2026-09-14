@@ -13,7 +13,7 @@ public class UnitTest1
         Program.database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
         Program.commentDatabase = new CSVDatabase<Comment>.getInstance(temporaryCommentFilePath);
 
-        Program.database.Store(new Observation(1, "seed", "seed obs", 1700000000));
+        Program.database.Store(new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
 
         var nonExistentObsID = 999; // Assuming this ID does not exist in the database
         var commentText = "This is a test comment.";
@@ -39,7 +39,7 @@ public class UnitTest1
         Program.database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
         Program.commentDatabase = new CSVDatabase<Comment>.getInstance(temporaryCommentFilePath);
 
-        Program.database.Store(new Observation(1, "seed", "seed obs", 1700000000));
+        Program.database.Store(new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
 
         var existingObsID = 1; // Assuming this ID exists in the database
         var commentText = "This is a test comment.";
