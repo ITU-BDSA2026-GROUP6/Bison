@@ -20,15 +20,18 @@ public class Cheep
 public class Observation : Cheep
 {
     public long ObsID { get; }
+    public string Location { get; }
 
     public Observation(
         long obsID,
         string author,
         string text,
+        string location,
         long timestamp)
         : base(author, text, timestamp)
     {
         ObsID = obsID;
+        Location = location;
     }
 }
 public class Comment : Cheep
@@ -51,7 +54,11 @@ public class ObserveOptions
 {
     [Value(0, MetaName = "observation", Required = true,
         HelpText = "The observation text to store.")]
-    public IEnumerable<string> Observation { get; set; } = [];
+    public string Observation { get; set; } = "";
+    
+    [Value(1, MetaName = "location", Required = true,
+        HelpText = "The location of the observation.")]
+    public string Location { get; set; } = "";
 }
 
 [Verb("comment", HelpText = "Store a new comment.")]
@@ -92,15 +99,13 @@ public class Program
     Parser.Default.ParseArguments<ObserveOptions, CommentOptions, ReadOptions, DiscussionOptions>(args).MapResult(
             (ObserveOptions options) =>
             {
-                Observe(string.Join(" ", options.Observation));
+                Observe(options.Observation, options.Location);
                 return 0;
             },
 
             (CommentOptions options) =>
             {
-                Comment(
-                    string.Join(" ", options.Comment),
-                    options.ObsID);
+                Comment(string.Join(" ", options.Comment), options.ObsID);
                 return 0;
             },
 
@@ -136,12 +141,13 @@ public class Program
         }
     }
 
-    static void Observe(string message)
+    static void Observe(string message, string location)
     {
         Observation observation = new Observation(
             GetNextObservationID(),
             Environment.UserName,
             message,
+            location,
             DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         try
         {
@@ -180,18 +186,6 @@ public class Program
     catch (Exception e)
     {
         UserInterface.DisplayReadError(e);
-    }
-}
-    public static void DisplayObservations(IEnumerable<Observation> observations)
-{
-    foreach (Observation observation in observations)
-    {
-        System.Console.WriteLine(
-            $"ID: {observation.ObsID}, " +
-            $"Author: {observation.Author}, " +
-            $"Observation: {observation.Text}, " +
-            $"Timestamp: {observation.Timestamp}"
-        );
     }
 }
     

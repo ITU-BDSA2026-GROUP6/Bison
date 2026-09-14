@@ -66,4 +66,38 @@ public class UnitTest1
         // Assert
         Assert.Equal(expectedDateTimeString, result);
     }
+
+    [Fact]
+    public void DisplayObservations_PrintsObservationWithLocation()
+    {
+        // Arrange
+        var observation = new Observation(
+        1,
+        "vitusjh",
+        "fugl spottet",
+        "Sydhavnen",
+        1700000000);
+
+        using var writer = new StringWriter();
+        var originalOutput = Console.Out;
+        Console.SetOut(writer);
+
+        try
+        {
+            // Act
+            UserInterface.DisplayObservations(new[] { observation });
+
+            // Assert
+            string output = writer.ToString();
+
+            Assert.Contains("ID: 1", output);
+            Assert.Contains("Author: vitusjh", output);
+            Assert.Contains("Observation: fugl spottet", output);
+            Assert.Contains("Location: Sydhavnen", output);
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
+    }  
 }
