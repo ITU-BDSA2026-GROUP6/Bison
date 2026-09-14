@@ -8,7 +8,8 @@ public static class UserInterface
             System.Console.WriteLine(
                 $"ID: {observation.ObsID}, " +
                 $"Author: {observation.Author}, " +
-               $"Observation: {observation.Text}, " +
+                $"Observation: {observation.Text}, " +
+                $"Location: {observation.Location}, " +
                 $"Timestamp: {UserInterface.ConvertTimestampToDateTimeString(observation.Timestamp)}"
             );
         }

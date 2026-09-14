@@ -10,10 +10,10 @@ public class UnitTest1
         string temporaryFilePath = Path.Combine(Path.GetTempPath(), "test_bison_observe_cli_db.csv");
         string temporaryCommentFilePath = Path.Combine(Path.GetTempPath(), "test_bison_comment_cli_db.csv");
 
-        Program.database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
-        Program.commentDatabase = new CSVDatabase<Comment>.getInstance(temporaryCommentFilePath);
+        Program.database = new CSVDatabase<Observation>(temporaryFilePath);
+        Program.commentDatabase = new CSVDatabase<Comment>(temporaryCommentFilePath);
 
-        Program.database.Store(new Observation(1, "seed", "seed obs", 1700000000));
+        Program.database.Store(new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
 
         var nonExistentObsID = 999; // Assuming this ID does not exist in the database
         var commentText = "This is a test comment.";
@@ -36,10 +36,10 @@ public class UnitTest1
         string temporaryFilePath = Path.Combine(Path.GetTempPath(), "test_bison_observe_cli_db.csv");
         string temporaryCommentFilePath = Path.Combine(Path.GetTempPath(), "test_bison_comment_cli_db.csv");
 
-        Program.database = new CSVDatabase<Observation>.getInstance(temporaryFilePath);
-        Program.commentDatabase = new CSVDatabase<Comment>.getInstance(temporaryCommentFilePath);
+        Program.database = new CSVDatabase<Observation>(temporaryFilePath);
+        Program.commentDatabase = new CSVDatabase<Comment>(temporaryCommentFilePath);
 
-        Program.database.Store(new Observation(1, "seed", "seed obs", 1700000000));
+        Program.database.Store(new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
 
         var existingObsID = 1; // Assuming this ID exists in the database
         var commentText = "This is a test comment.";
