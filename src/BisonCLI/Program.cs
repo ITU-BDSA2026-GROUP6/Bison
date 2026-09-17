@@ -4,50 +4,6 @@ using SimpleDB;
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Bison.Tests")]
 
-public class Cheep
-{
-    public string Author { get; }
-    public string Text { get; }
-    public long Timestamp { get; }
-
-    public Cheep(string author, string text, long timestamp)
-    {
-        Author = author;
-        Text = text;
-        Timestamp = timestamp;
-    }
-}
-public class Observation : Cheep
-{
-    public long ObsID { get; }
-    public string Location { get; }
-
-    public Observation(
-        long obsID,
-        string author,
-        string text,
-        string location,
-        long timestamp)
-        : base(author, text, timestamp)
-    {
-        ObsID = obsID;
-        Location = location;
-    }
-}
-public class Comment : Cheep
-{   
-    public long ObsID { get; }
-
-    public Comment(
-        long obsID,
-        string author,
-        string text,
-        long timestamp)
-        : base(author, text, timestamp)
-    {
-        ObsID = obsID;
-    }
-}
 
 [Verb("observe", HelpText = "Store a new observation.")]
 public class ObserveOptions
@@ -55,7 +11,7 @@ public class ObserveOptions
     [Value(0, MetaName = "observation", Required = true,
         HelpText = "The observation text to store.")]
     public string Observation { get; set; } = "";
-    
+
     [Value(1, MetaName = "location", Required = true,
         HelpText = "The location of the observation.")]
     public string Location { get; set; } = "";
@@ -88,45 +44,45 @@ public class DiscussionOptions
 
 public class Program
 {
-    internal static IDatabaseRepository<Observation> database = 
+    internal static IDatabaseRepository<Observation> database =
     CSVDatabase<Observation>.GetInstance(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
-    internal static IDatabaseRepository<Comment> commentDatabase = 
+    internal static IDatabaseRepository<Comment> commentDatabase =
     CSVDatabase<Comment>.GetInstance(Path.Combine("CSVfiles", "bison_comment_cli_db.csv"));
-    
-    
+
+
     static void Main(string[] args)
-{
-    Parser.Default.ParseArguments<ObserveOptions, CommentOptions, ReadOptions, DiscussionOptions>(args).MapResult(
-            (ObserveOptions options) =>
-            {
-                Observe(options.Observation, options.Location);
-                return 0;
-            },
+    {
+        Parser.Default.ParseArguments<ObserveOptions, CommentOptions, ReadOptions, DiscussionOptions>(args).MapResult(
+                (ObserveOptions options) =>
+                {
+                    Observe(options.Observation, options.Location);
+                    return 0;
+                },
 
-            (CommentOptions options) =>
-            {
-                Comment(string.Join(" ", options.Comment), options.ObsID);
-                return 0;
-            },
+                (CommentOptions options) =>
+                {
+                    Comment(string.Join(" ", options.Comment), options.ObsID);
+                    return 0;
+                },
 
-            (ReadOptions options) =>
-            {
-                Read();
-                return 0;
-            },
+                (ReadOptions options) =>
+                {
+                    Read();
+                    return 0;
+                },
 
-            (DiscussionOptions options) =>
-            {
-                Discussion(options.ObsID);
-                return 0;
-            },
+                (DiscussionOptions options) =>
+                {
+                    Discussion(options.ObsID);
+                    return 0;
+                },
 
-            errors =>
-            {
-                DisplayParseError(errors);
-                return 1;
-            });
-}
+                errors =>
+                {
+                    DisplayParseError(errors);
+                    return 1;
+                });
+    }
 
     static void DisplayParseError(IEnumerable<Error> errors)
     {
@@ -156,7 +112,7 @@ public class Program
         }
         catch (Exception e)
         {
-           UserInterface.DisplayWriteError(e);
+            UserInterface.DisplayWriteError(e);
         }
 
         DisplayStoredObservations();
@@ -164,31 +120,31 @@ public class Program
 
     static long GetNextObservationID()
     {
-    try
-    {
-        var observations = database.Read().ToList();
+        try
+        {
+            var observations = database.Read().ToList();
 
-        return observations.Count + 1;
+            return observations.Count + 1;
+        }
+        catch
+        {
+            return 1;
+        }
     }
-    catch
-    {
-        return 1;
-    }
-}
     static void Read()
-{
-    try
     {
-        var observations = database.Read();
+        try
+        {
+            var observations = database.Read();
 
-        UserInterface.DisplayObservations(observations);
+            UserInterface.DisplayObservations(observations);
+        }
+        catch (Exception e)
+        {
+            UserInterface.DisplayReadError(e);
+        }
     }
-    catch (Exception e)
-    {
-        UserInterface.DisplayReadError(e);
-    }
-}
-    
+
     public static bool Comment(string message, long obsID)
     {
         try
@@ -209,33 +165,34 @@ public class Program
             commentDatabase.Store(comment);
             UserInterface.DisplaySuccess();
             return true;
-        
-        } catch (Exception e)
+
+        }
+        catch (Exception e)
         {
             UserInterface.DisplayReadError(e);
             return false;
         }
     }
-    
+
     static void Discussion(long obsID)
-{
-    try
     {
-        var observations = database.Read().FirstOrDefault(o => o.ObsID == obsID);
-        if (observations == null)
+        try
         {
-            System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
+            var observations = database.Read().FirstOrDefault(o => o.ObsID == obsID);
+            if (observations == null)
+            {
+                System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
+                return;
+            }
+            var comments = commentDatabase.Read().Where(c => c.ObsID == obsID);
+            UserInterface.DisplayDiscussion(observations, comments);
+        }
+        catch (Exception e)
+        {
+            UserInterface.DisplayReadError(e);
             return;
         }
-        var comments = commentDatabase.Read().Where(c => c.ObsID == obsID);
-        UserInterface.DisplayDiscussion(observations, comments);
     }
-    catch (Exception e)
-    {
-        UserInterface.DisplayReadError(e);
-        return;
-    }
-}
 
 
     static void DisplayStoredObservations()

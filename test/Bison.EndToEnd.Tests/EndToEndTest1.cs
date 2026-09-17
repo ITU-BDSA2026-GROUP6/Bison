@@ -1,4 +1,5 @@
 ﻿namespace Bison.EndToEnd.Tests;
+
 using System.Diagnostics;
 using SimpleDB;
 
@@ -28,7 +29,7 @@ public class EndToEndTest1
         process.WaitForExit();
         return (stdout, process.ExitCode);
 
-    } 
+    }
 
     [Fact]
     public void calling_bison_observe_penguin_stores_correct_values()

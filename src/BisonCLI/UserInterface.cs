@@ -1,4 +1,5 @@
 using System.Globalization;
+using SimpleDB;
 public static class UserInterface
 {
     public static void DisplayObservations(IEnumerable<Observation> observations)
@@ -32,7 +33,7 @@ public static class UserInterface
                 $"Comment: {c.Text}, " +
                 $"Timestamp: {c.Timestamp}"
             );
-            
+
         }
     }
 
