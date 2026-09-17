@@ -8,7 +8,7 @@ public class EndToEndTest1
 
     // Path to the Bison.CLI.csproj file
     private static readonly string PathToCliCsproj = Path.GetFullPath(
-    Path.Combine(AppContext.BaseDirectory, "../../../../../src/Bison.CLI.csproj"));
+    Path.Combine(AppContext.BaseDirectory, "../../../../../src/BisonCLI/Bison.CLI.csproj"));
 
     // This method runs the Bison.CLI with the specified arguments and captures its output and exit code.
     private static (string stdout, int exitcode) RunProcess(string arguments, string workingDirectory)
