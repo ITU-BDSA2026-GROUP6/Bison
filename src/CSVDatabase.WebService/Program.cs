@@ -1,5 +1,5 @@
 using SimpleDB;
-using CSVDatabese.WebService.Models;
+using SimpleDB.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
