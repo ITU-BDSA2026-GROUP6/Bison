@@ -24,9 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SimpleDB\SimpleDB.csproj" />
+    <ProjectReference Include="..\..\src\BisonCLI\Bison.CLI.csproj" />
   </ItemGroup>
-  <ItemGroup>
-  <ProjectReference Include="..\..\src\Bison.CLI.csproj" />
-</ItemGroup>
 
 </Project>
