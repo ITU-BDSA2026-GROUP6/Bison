@@ -29,6 +29,11 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 
     public IEnumerable<T> Read(int? limit = null)
     {
+        if (!File.Exists(_filePath))
+        {
+            return new List<T>();
+        }
+
         using StreamReader reader = new(_filePath);
         using CsvReader csv = new(reader, Config);
 

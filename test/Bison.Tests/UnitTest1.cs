@@ -1,53 +1,41 @@
 namespace Bison.Tests;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 using SimpleDB;
 
-public class UnitTest1
+public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
 {
-    [Fact]
-    public void Comment_ReturnsFalse_WhenObservationDoesNotExist()
+    private readonly HttpClient _client;
+    public UnitTest1(WebApplicationFactory<Program> fixture)
     {
-        // Arrange
-        string temporaryFilePath = Path.Combine(Path.GetTempPath(), "test_bison_observe_cli_db.csv");
-        string temporaryCommentFilePath = Path.Combine(Path.GetTempPath(), "test_bison_comment_cli_db.csv");
+        _client = fixture.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = true, HandleCookies = true });
+        Bison.CLI.Program.client = _client;
+    }
 
-        Program.database = new CSVDatabase<Observation>(temporaryFilePath);
-        Program.commentDatabase = new CSVDatabase<Comment>(temporaryCommentFilePath);
+    [Fact]
+    public async Task Comment_ReturnsFalse_WhenObservationDoesNotExist()
+    {
+        //Arrange
+        await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seeb obs", "Test Location", 1700000000));
 
-        Program.database.Store(new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
+        //Act
+        var result = Bison.CLI.Program.Comment("Test comment.", 999);
 
-        var nonExistentObsID = 999; // Assuming this ID does not exist in the database
-        var commentText = "This is a test comment.";
-
-        // Act
-        var result = Program.Comment(commentText, nonExistentObsID);
-
-        // Assert
+        //Assert
         Assert.False(result);
-
-        // Cleanup
-        File.Delete(temporaryFilePath);
-        File.Delete(temporaryCommentFilePath);
     }
 
     
     [Fact]
-    public void Comment_ReturnsTrue_WhenObservationExists()
+    public async Task Comment_ReturnsTrue_WhenObservationExists()
     {
-        string temporaryFilePath = Path.Combine(Path.GetTempPath(), "test_bison_observe_cli_db.csv");
-        string temporaryCommentFilePath = Path.Combine(Path.GetTempPath(), "test_bison_comment_cli_db.csv");
+        //Arrange
+        await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seeb obs", "Test Location", 1700000000));
 
-        Program.database = new CSVDatabase<Observation>(temporaryFilePath);
-        Program.commentDatabase = new CSVDatabase<Comment>(temporaryCommentFilePath);
+        //Act
+        var result = Bison.CLI.Program.Comment("Test comment.", 1);
 
-        Program.database.Store(new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
-
-        var existingObsID = 1; // Assuming this ID exists in the database
-        var commentText = "This is a test comment.";
-
-        // Act
-        var result = Program.Comment(commentText, existingObsID);
-
-        // Assert
+        //Assert
         Assert.True(result);
     }
     

@@ -1,9 +1,10 @@
 ﻿using CommandLine;
 using SimpleDB;
+using System.Net.Http.Json;
 
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Bison.Tests")]
-
+namespace Bison.CLI;
 
 [Verb("observe", HelpText = "Store a new observation.")]
 public class ObserveOptions
@@ -44,11 +45,7 @@ public class DiscussionOptions
 
 public class Program
 {
-    internal static IDatabaseRepository<Observation> database =
-    CSVDatabase<Observation>.GetInstance(Path.Combine("CSVfiles", "bison_observe_cli_db.csv"));
-    internal static IDatabaseRepository<Comment> commentDatabase =
-    CSVDatabase<Comment>.GetInstance(Path.Combine("CSVfiles", "bison_comment_cli_db.csv"));
-
+    internal static HttpClient client = new() { BaseAddress = new Uri("http://localhost:5204") };
 
     static void Main(string[] args)
     {
@@ -107,7 +104,7 @@ public class Program
             DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         try
         {
-            database.Store(observation);
+            client.PostAsJsonAsync("/observation", observation).Result.EnsureSuccessStatusCode();
             UserInterface.DisplaySuccess();
         }
         catch (Exception e)
@@ -122,8 +119,10 @@ public class Program
     {
         try
         {
-            var observations = database.Read().ToList();
-
+            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
+            //The field above does three things. Sends the HTTP GET to http://localhost:5204/observations
+            //Receives the JSON the web service returns.
+            //Converts that JSON into a List<Observation>
             return observations.Count + 1;
         }
         catch
@@ -135,7 +134,7 @@ public class Program
     {
         try
         {
-            var observations = database.Read();
+            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
 
             UserInterface.DisplayObservations(observations);
         }
@@ -149,7 +148,7 @@ public class Program
     {
         try
         {
-            var observations = database.Read();
+            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
             bool observationExists = observations.Any(o => o.ObsID == obsID);
 
             if (!observationExists)
@@ -162,7 +161,8 @@ public class Program
                 Environment.UserName,
                 message,
                 DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            commentDatabase.Store(comment);
+            //commentDatabase.Store(comment);
+            client.PostAsJsonAsync("/comment", comment).Result.EnsureSuccessStatusCode();
             UserInterface.DisplaySuccess();
             return true;
 
@@ -178,14 +178,15 @@ public class Program
     {
         try
         {
-            var observations = database.Read().FirstOrDefault(o => o.ObsID == obsID);
-            if (observations == null)
+            var observation = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!
+            .FirstOrDefault(o => o.ObsID == obsID);
+            if (observation == null)
             {
                 System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
                 return;
             }
-            var comments = commentDatabase.Read().Where(c => c.ObsID == obsID);
-            UserInterface.DisplayDiscussion(observations, comments);
+            var comments = client.GetFromJsonAsync<List<Comment>>($"/comments?id={obsID}").Result!;
+            UserInterface.DisplayDiscussion(observation, comments);
         }
         catch (Exception e)
         {
@@ -199,7 +200,8 @@ public class Program
     {
         try
         {
-            UserInterface.DisplayObservations(database.Read());
+            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
+            UserInterface.DisplayObservations(observations);
         }
         catch (Exception e)
         {

@@ -1,7 +1,9 @@
 ﻿namespace Bison.EndToEnd.Tests;
 
 using System.Diagnostics;
+using System.Net.Http.Json;
 using SimpleDB;
+using Xunit.Sdk;
 
 public class EndToEndTest1
 {
@@ -9,6 +11,9 @@ public class EndToEndTest1
     // Path to the Bison.CLI.csproj file
     private static readonly string PathToCliCsproj = Path.GetFullPath(
     Path.Combine(AppContext.BaseDirectory, "../../../../../src/BisonCLI/Bison.CLI.csproj"));
+
+    private static readonly string PathToWebServiceCsproj = Path.GetFullPath(
+        Path.Combine(AppContext.BaseDirectory, "../../../../../src/CSVDatabase.WebService/CSVDatabase.WebService.csproj"));
 
     // This method runs the Bison.CLI with the specified arguments and captures its output and exit code.
     private static (string stdout, int exitcode) RunProcess(string arguments, string workingDirectory)
@@ -31,26 +36,58 @@ public class EndToEndTest1
 
     }
 
+
     [Fact]
-    public void calling_bison_observe_penguin_stores_correct_values()
+    public async Task calling_bison_read_shows_observation_stored_in_web_service()
     {
-        // Arrange. Isolated working directory for the test
-        string workingDirectory = Path.Combine(Path.GetTempPath(), $"Bison_e2e_test_{Guid.NewGuid()}");
-        Directory.CreateDirectory(Path.Combine(workingDirectory, "CSVfiles"));
+        //Arrange: start a real web service
+        using var server = Process.Start(new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            Arguments = $"run --project \"{PathToWebServiceCsproj}\" --urls http://localhost:5204",
+            UseShellExecute = false, 
+        })!;
 
-        var db = CSVDatabase<Observation>.GetInstance(Path.Combine(workingDirectory, "CSVfiles", "bison_observe_cli_db.csv"));
-        db.Store(new Observation(1, "August", "saw a penguin", "Test Location", 1700000000));
+        try
+        {
+            using var client = new HttpClient {BaseAddress = new Uri("http://localhost:5204")};
+            await WaitForServer(client);
 
-        // Act. Run the Bison.CLI with the "read" command
-        var (stdout, exitcode) = RunProcess("read", workingDirectory);
+            string text = $"saw a penguing {Guid.NewGuid()}";
+            var response = await client.PostAsJsonAsync("/observation", new Observation(1, "August", text, "Test Location", 1700000000));
+            response.EnsureSuccessStatusCode();
 
+            // Act
+            var (stdout, exitcode) = RunProcess("read", Path.GetTempPath());
 
-        //Assert
-        Assert.Equal(0, exitcode);
-        Assert.Contains("ID: 1", stdout);
-        Assert.Contains("Author: August", stdout);
-        Assert.Contains("Observation: saw a penguin", stdout);
+            // Assert
+            Assert.Equal(0, exitcode);
+            Assert.Contains("Author: August", stdout);
+            Assert.Contains($"Observation: {text}", stdout);
+        }
+        finally
+        {
+            // Stop webservice
+            server.Kill(entireProcessTree: true);
+        }
+    }
 
-        Directory.Delete(workingDirectory, recursive: true);
+        // Polls the web service until it answers (or gives up after 30 seconds)
+    private static async Task WaitForServer(HttpClient client)
+    {
+        for (int i = 0; i < 60; i++)
+        {
+            try
+            {
+                var response = await client.GetAsync("/observations");
+                if (response.IsSuccessStatusCode) return;
+            }
+            catch (HttpRequestException)
+            {
+                // not started yet
+            }
+            await Task.Delay(500);
+        }
+        throw new TimeoutException("Web service did not start");
     }
 }

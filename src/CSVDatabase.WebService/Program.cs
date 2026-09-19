@@ -1,5 +1,4 @@
 using SimpleDB;
-using SimpleDB.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -42,3 +41,4 @@ app.MapGet("/comments", (long id) =>
 });
 
 app.Run();
+public partial class Program { }
