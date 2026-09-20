@@ -2,6 +2,7 @@ using SimpleDB;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
+var taxonomy = Taxonomy.LoadEmbedded();
 
 string csvDirectory = Path.Combine(AppContext.BaseDirectory, "CSVFiles");
 Directory.CreateDirectory(csvDirectory);
