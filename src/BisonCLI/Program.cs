@@ -17,7 +17,6 @@ public class ObserveOptions
         HelpText = "The location of the observation.")]
     public string Location { get; set; } = "";
 }
-
 [Verb("comment", HelpText = "Store a new comment.")]
 public class CommentOptions
 {
@@ -29,6 +28,19 @@ public class CommentOptions
         HelpText = "The ID of the observation to comment on.")]
     public long ObsID { get; set; }
 }
+
+[Verb("propose", HelpText = "Propose a taxon for an observation.")]
+public class ProposeOptions
+{
+    [Value(0, MetaName = "taxon-id", Required = true,
+        HelpText = "The taxon ID to propose.")]
+    public string TaxonID { get; set; } = "";
+
+    [Value(1, MetaName = "observation-id", Required = true,
+        HelpText = "The ID of the observation to propose a taxon for.")]
+    public long ObsID { get; set; }
+}
+
 
 [Verb("read", HelpText = "Display all observations.")]
 public class ReadOptions
@@ -49,7 +61,7 @@ public class Program
 
     static void Main(string[] args)
     {
-        Parser.Default.ParseArguments<ObserveOptions, CommentOptions, ReadOptions, DiscussionOptions>(args).MapResult(
+        Parser.Default.ParseArguments<ObserveOptions, CommentOptions, ProposeOptions, ReadOptions, DiscussionOptions>(args).MapResult(
                 (ObserveOptions options) =>
                 {
                     Observe(options.Observation, options.Location);
@@ -59,6 +71,12 @@ public class Program
                 (CommentOptions options) =>
                 {
                     Comment(string.Join(" ", options.Comment), options.ObsID);
+                    return 0;
+                },
+
+                (ProposeOptions options) =>
+                {
+                    Propose(options.TaxonID, options.ObsID);
                     return 0;
                 },
 
@@ -173,6 +191,43 @@ public class Program
             return false;
         }
     }
+
+    public static bool Propose(string taxonID, long obsID)
+{
+    try
+    {
+        var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
+        bool observationExists = observations.Any(o => o.ObsID == obsID);
+
+        if (!observationExists)
+        {
+            System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
+            return false;
+        }
+
+        var taxon = Taxonomy.LoadEmbedded().GetById(taxonID);
+        if (taxon == null)
+        {
+            System.Console.WriteLine($"Taxon with ID {taxonID} does not exist.");
+            return false;
+        }
+
+        Proposal proposal = new Proposal(
+            obsID,
+            Environment.UserName,
+            taxonID,
+            DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+
+        client.PostAsJsonAsync("/proposal", proposal).Result.EnsureSuccessStatusCode();
+        UserInterface.DisplaySuccess();
+        return true;
+    }
+    catch (Exception e)
+    {
+        UserInterface.DisplayReadError(e);
+        return false;
+    }
+}
 
     static void Discussion(long obsID)
     {
