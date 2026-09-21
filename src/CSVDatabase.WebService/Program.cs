@@ -15,6 +15,10 @@ IDatabaseRepository<Comment> commentDatabase =
     CSVDatabase<Comment>.GetInstance(
         Path.Combine(csvDirectory, "comments.csv"));
 
+IDatabaseRepository<Proposal> proposalDatabase =
+    CSVDatabase<Proposal>.GetInstance(
+        Path.Combine(csvDirectory, "proposals.csv"));
+
 app.MapPost("/observation", (Observation observation) =>
 {
     observationDatabase.Store(observation);
@@ -24,6 +28,12 @@ app.MapPost("/observation", (Observation observation) =>
 app.MapPost("/comment", (Comment comment) =>
 {
     commentDatabase.Store(comment);
+    return Results.Ok();
+});
+
+app.MapPost("/proposal", (Proposal proposal) =>
+{
+    proposalDatabase.Store(proposal);
     return Results.Ok();
 });
 
@@ -39,6 +49,15 @@ app.MapGet("/comments", (long id) =>
         .Where(comment => comment.ObsID == id);
 
     return Results.Ok(comments);
+});
+
+app.MapGet("/proposals", (long id) =>
+{
+    var proposals = proposalDatabase
+        .Read()
+        .Where(proposal => proposal.ObsID == id);
+
+    return Results.Ok(proposals);
 });
 
 app.Run();

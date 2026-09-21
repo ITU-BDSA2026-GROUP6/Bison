@@ -33,4 +33,26 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode); 
     }
 
+    [Fact]
+    public async Task PostRequestToProposalResponseIs200()
+    {
+    var proposal = new Proposal(1, "August", "MSTSNM:Arter:c28811f4-f785-ea11-aa77-501ac539d1ea", 1700000000);
+    var response = await _client.PostAsJsonAsync("/proposal", proposal);
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+
+    [Fact]
+    public async Task GetRequestToProposalsResponseIs200AndListOfProposals()
+    {
+    await _client.PostAsJsonAsync("/observation", new Observation(1, "August", "Saw a heron", "Copenhagen", 1700000000));
+    await _client.PostAsJsonAsync("/proposal", new Proposal(1, "August", "MSTSNM:Arter:c28811f4-f785-ea11-aa77-501ac539d1ea", 1700000000));
+
+    var response = await _client.GetAsync("/proposals?id=1");
+
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    var proposals = await response.Content.ReadFromJsonAsync<List<Proposal>>();
+    Assert.NotNull(proposals);
+    Assert.Contains(proposals, p => p.ObsID == 1);
+    }
 }

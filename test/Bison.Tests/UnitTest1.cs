@@ -88,4 +88,28 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
             Console.SetOut(originalOutput);
         }
     }  
+
+    [Fact]
+    public async Task Propose_ReturnsFalse_WhenObservationDoesNotExist()
+    {
+    await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
+    var result = Bison.CLI.Program.Propose("MSTSNM:Arter:c28811f4-f785-ea11-aa77-501ac539d1ea", 999);
+    Assert.False(result);
+    }
+
+    [Fact]
+    public async Task Propose_ReturnsFalse_WhenTaxonDoesNotExist()
+    {
+    await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
+    var result = Bison.CLI.Program.Propose("not-a-real-taxon-id", 1);
+    Assert.False(result);
+    }
+
+    [Fact]
+    public async Task Propose_ReturnsTrue_WhenObservationAndTaxonExist()
+    {
+    await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
+    var result = Bison.CLI.Program.Propose("MSTSNM:Arter:c28811f4-f785-ea11-aa77-501ac539d1ea", 1);
+    Assert.True(result);
+    }
 }

@@ -1,3 +1,5 @@
+using CsvHelper.Configuration.Attributes;
+
 namespace SimpleDB;
 
 public class Cheep
@@ -43,4 +45,23 @@ public class Comment : Cheep
     {
         ObsID = obsID;
     }
+}
+
+public class Proposal : Cheep
+{
+    public long ObsID { get; }
+
+    [Ignore]
+    public string TaxonID => Text;
+
+    public Proposal(
+        long obsID,
+        string author,
+        string text,
+        long timestamp)
+        : base(author, text, timestamp)
+    {
+        ObsID = obsID;
+    }
+
 }
