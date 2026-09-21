@@ -29,3 +29,9 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: testing
+
+      - name: Add label Documentation
+        if: contains(github.event.issue.title,'[DOC]')
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: documentation
