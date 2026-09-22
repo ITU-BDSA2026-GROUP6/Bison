@@ -1,5 +1,14 @@
 using System.Globalization;
 using SimpleDB;
+
+
+/*
+    * UserInterface.cs
+    * 
+    * This class is responsible for displaying information to the user in the console.
+    * It provides methods to display observations, discussions, and error messages.
+*/
+
 public static class UserInterface
 {
     public static void DisplayObservations(IEnumerable<Observation> observations)
