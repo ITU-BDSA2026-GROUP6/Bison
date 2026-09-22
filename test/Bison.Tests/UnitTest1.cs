@@ -5,6 +5,7 @@ using SimpleDB;
 
 public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
 {
+    //Inistialize HttpClient to be used for testing
     private readonly HttpClient _client;
     public UnitTest1(WebApplicationFactory<Program> fixture)
     {
@@ -13,6 +14,7 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    //test to check if comment function returns false if observation does not exist
     public async Task Comment_ReturnsFalse_WhenObservationDoesNotExist()
     {
         //Arrange
@@ -27,6 +29,7 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
 
     
     [Fact]
+    //test to check if comment function returns true if observation exists
     public async Task Comment_ReturnsTrue_WhenObservationExists()
     {
         //Arrange
@@ -42,6 +45,7 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     
 
     [Fact]
+    //test to check if the timestamp fucktions returns in the correct format
     public void ConvertTimestampToDateTimeString_ReturnsCorrectFormat()
     {
         // Arrange
@@ -56,6 +60,7 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    //test to check if the display observations function prints the observation with location correctly
     public void DisplayObservations_PrintsObservationWithLocation()
     {
         // Arrange
@@ -90,6 +95,7 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     }  
 
     [Fact]
+    //test to check if the display observations function prints the observation without location correctly
     public async Task Propose_ReturnsFalse_WhenObservationDoesNotExist()
     {
     await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
@@ -98,6 +104,7 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    //test to check if the propose function returns false when the taxon does not exist
     public async Task Propose_ReturnsFalse_WhenTaxonDoesNotExist()
     {
     await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seed obs", "Test Location", 1700000000));
@@ -106,6 +113,7 @@ public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    //test to check if the propose function returns true when both the observation and taxon exist
     public async Task Propose_ReturnsTrue_WhenObservationAndTaxonExist()
     {
     await _client.PostAsJsonAsync("/observation", new Observation(1, "seed", "seed obs", "Test Location", 1700000000));

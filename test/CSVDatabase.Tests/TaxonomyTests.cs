@@ -5,6 +5,7 @@ namespace CSVDatabase.Tests;
 public class TaxonomyTests
 {
     [Fact]
+    //test to check if the GetById function returns the expected taxon
     public void GetById_ReturnsExpectedTaxon()
     {
         var taxonomy = Taxonomy.LoadEmbedded();
@@ -17,6 +18,7 @@ public class TaxonomyTests
     }
 
     [Fact]
+    //test to check if the GetByDanishName function returns the expected taxon
     public void GetByDanishName_ReturnsExpectedTaxon()
     {
         var taxonomy = Taxonomy.LoadEmbedded();
@@ -28,6 +30,7 @@ public class TaxonomyTests
     }
 
     [Fact]
+    //test to check if the GetParent function returns the direct parent of a taxon
     public void GetParent_ReturnsDirectParent()
     {
         var taxonomy = Taxonomy.LoadEmbedded();
@@ -41,6 +44,7 @@ public class TaxonomyTests
     }
 
     [Fact]
+    //test to check if the GetChildren function returns the direct children of a taxon
     public void GetChildren_ReturnsDirectChildren()
     {
         var taxonomy = Taxonomy.LoadEmbedded();
@@ -55,6 +59,7 @@ public class TaxonomyTests
     }
 
     [Fact]
+    //test to check if the GetParent function returns null when the parent is outside the dataset
     public void GetParent_ReturnsNull_WhenParentIsOutsideDataset()
     {
         var taxonomy = Taxonomy.LoadEmbedded();
@@ -66,6 +71,7 @@ public class TaxonomyTests
     }
 
     [Fact]
+    //test to check if  it does not return any results when the taxon does not exist
     public void UnknownTaxon_ReturnsNoResults()
     {
         var taxonomy = Taxonomy.LoadEmbedded();

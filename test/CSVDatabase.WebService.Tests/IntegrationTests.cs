@@ -16,6 +16,7 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 
 
     [Fact]
+    //test to check if the Get request to /observations returns a 200 OK status code and a list of observations
     public async Task GetRequestToObservationsResponseIs200AndListOfObservations()
     {
         var response = await _client.GetAsync("/observations");
@@ -26,6 +27,7 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    //test to check if the post request to /observation returns a 200 OK status code
     public async Task PostRequestToObservationResponseIs200()
     {
         var observation = new Observation(1, "August", "Saw a heron", "Copenhagen", 1700000000);
@@ -34,6 +36,7 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    //test to check if the post request to /proposal returns a 200 OK status code
     public async Task PostRequestToProposalResponseIs200()
     {
     var proposal = new Proposal(1, "August", "MSTSNM:Arter:c28811f4-f785-ea11-aa77-501ac539d1ea", 1700000000);
@@ -43,6 +46,7 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 
 
     [Fact]
+    //test to check if the Get request to /proposals returns a 200 OK status code and a list of proposals
     public async Task GetRequestToProposalsResponseIs200AndListOfProposals()
     {
     await _client.PostAsJsonAsync("/observation", new Observation(1, "August", "Saw a heron", "Copenhagen", 1700000000));
