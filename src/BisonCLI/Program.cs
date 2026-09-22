@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using SimpleDB;
 using System.Net.Http.Json;
 
@@ -6,40 +6,57 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Bison.Tests")]
 namespace Bison.CLI;
 
+
+/*
+    * Program.cs
+    * 
+    * This is the entry point for the Bison CLI application.
+    * It parses command line arguments and invokes the appropriate methods in BisonCliService.
+*/
 public class Program
 {
     internal static HttpClient client = new() { BaseAddress = new Uri("http://localhost:5204") };
+
+    public static bool Comment(string message, long observationId)
+    {
+        return new BisonCliService(client).Comment(message, observationId);
+    }
+
+    public static bool Propose(string taxonId, long observationId)
+    {
+        return new BisonCliService(client).Propose(taxonId, observationId);
+    }
 
     static void Main(string[] args)
     {
         Parser.Default.ParseArguments<ObserveOptions, CommentOptions, ProposeOptions, ReadOptions, DiscussionOptions>(args).MapResult(
                 (ObserveOptions options) =>
                 {
-                    Observe(options.Observation, options.Location);
+                    new BisonCliService(client).Observe(options.Observation, options.Location);
                     return 0;
                 },
 
                 (CommentOptions options) =>
                 {
-                    Comment(string.Join(" ", options.Comment), options.ObsID);
+                    new BisonCliService(client).Comment(string.Join(" ", options.Comment), options.ObsID);
                     return 0;
                 },
 
                 (ProposeOptions options) =>
                 {
-                    Propose(options.TaxonID, options.ObsID);
+                    new BisonCliService(client).Propose(options.TaxonID, options.ObsID);
                     return 0;
                 },
 
                 (ReadOptions options) =>
                 {
-                    Read();
+                    new BisonCliService(client).Read();
                     return 0;
                 },
 
                 (DiscussionOptions options) =>
                 {
-                    Discussion(options.ObsID);
+                    new BisonCliService(client).Discussion(options.ObsID);
                     return 0;
                 },
 
@@ -49,21 +66,6 @@ public class Program
                     return 1;
                 });
     }
-    /*
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    */
-
     static void DisplayParseError(IEnumerable<Error> errors)
     {
         bool helpOrVersionRequested = errors.Any(error =>
@@ -76,157 +78,4 @@ public class Program
             UserInterface.DisplayInvalidCommandMessage();
         }
     }
-
-    static void Observe(string message, string location)
-    {
-        Observation observation = new Observation(
-            GetNextObservationID(),
-            Environment.UserName,
-            message,
-            location,
-            DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-        try
-        {
-            client.PostAsJsonAsync("/observation", observation).Result.EnsureSuccessStatusCode();
-            UserInterface.DisplaySuccess();
-        }
-        catch (Exception e)
-        {
-            UserInterface.DisplayWriteError(e);
-        }
-
-        DisplayStoredObservations();
-    }
-
-    static long GetNextObservationID()
-    {
-        try
-        {
-            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
-            //The field above does three things. Sends the HTTP GET to http://localhost:5204/observations
-            //Receives the JSON the web service returns.
-            //Converts that JSON into a List<Observation>
-            return observations.Count + 1;
-        }
-        catch
-        {
-            return 1;
-        }
-    }
-    static void Read()
-    {
-        try
-        {
-            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
-
-            UserInterface.DisplayObservations(observations);
-        }
-        catch (Exception e)
-        {
-            UserInterface.DisplayReadError(e);
-        }
-    }
-
-    public static bool Comment(string message, long obsID)
-    {
-        try
-        {
-            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
-            bool observationExists = observations.Any(o => o.ObsID == obsID);
-
-            if (!observationExists)
-            {
-                System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
-                return false;
-            }
-            Comment comment = new Comment(
-                obsID,
-                Environment.UserName,
-                message,
-                DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            //commentDatabase.Store(comment);
-            client.PostAsJsonAsync("/comment", comment).Result.EnsureSuccessStatusCode();
-            UserInterface.DisplaySuccess();
-            return true;
-
-        }
-        catch (Exception e)
-        {
-            UserInterface.DisplayReadError(e);
-            return false;
-        }
-    }
-
-    public static bool Propose(string taxonID, long obsID)
-    {
-        try
-        {
-            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
-            bool observationExists = observations.Any(o => o.ObsID == obsID);
-
-            if (!observationExists)
-            {
-                System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
-                return false;
-            }
-
-            var taxon = Taxonomy.LoadEmbedded().GetById(taxonID);
-            if (taxon == null)
-            {
-                System.Console.WriteLine($"Taxon with ID {taxonID} does not exist.");
-                return false;
-            }
-
-            Proposal proposal = new Proposal(
-                obsID,
-                Environment.UserName,
-                taxonID,
-                DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-
-            client.PostAsJsonAsync("/proposal", proposal).Result.EnsureSuccessStatusCode();
-            UserInterface.DisplaySuccess();
-            return true;
-        }
-        catch (Exception e)
-        {
-            UserInterface.DisplayReadError(e);
-            return false;
-        }
-    }
-
-    static void Discussion(long obsID)
-    {
-        try
-        {
-            var observation = client.GetFromJsonAsync<List<Observation>>("/observations").Result!
-            .FirstOrDefault(o => o.ObsID == obsID);
-            if (observation == null)
-            {
-                System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
-                return;
-            }
-            var comments = client.GetFromJsonAsync<List<Comment>>($"/comments?id={obsID}").Result!;
-            UserInterface.DisplayDiscussion(observation, comments);
-        }
-        catch (Exception e)
-        {
-            UserInterface.DisplayReadError(e);
-            return;
-        }
-    }
-
-
-    static void DisplayStoredObservations()
-    {
-        try
-        {
-            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
-            UserInterface.DisplayObservations(observations);
-        }
-        catch (Exception e)
-        {
-            UserInterface.DisplayReadError(e);
-        }
-    }
 }
-
