@@ -6,55 +6,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Bison.Tests")]
 namespace Bison.CLI;
 
-[Verb("observe", HelpText = "Store a new observation.")]
-public class ObserveOptions
-{
-    [Value(0, MetaName = "observation", Required = true,
-        HelpText = "The observation text to store.")]
-    public string Observation { get; set; } = "";
-
-    [Value(1, MetaName = "location", Required = true,
-        HelpText = "The location of the observation.")]
-    public string Location { get; set; } = "";
-}
-[Verb("comment", HelpText = "Store a new comment.")]
-public class CommentOptions
-{
-    [Value(0, MetaName = "comment", Required = true, Max = 1,
-        HelpText = "The comment text.")]
-    public IEnumerable<string> Comment { get; set; } = [];
-
-    [Value(1, MetaName = "observation-id", Required = true,
-        HelpText = "The ID of the observation to comment on.")]
-    public long ObsID { get; set; }
-}
-
-[Verb("propose", HelpText = "Propose a taxon for an observation.")]
-public class ProposeOptions
-{
-    [Value(0, MetaName = "taxon-id", Required = true,
-        HelpText = "The taxon ID to propose.")]
-    public string TaxonID { get; set; } = "";
-
-    [Value(1, MetaName = "observation-id", Required = true,
-        HelpText = "The ID of the observation to propose a taxon for.")]
-    public long ObsID { get; set; }
-}
-
-
-[Verb("read", HelpText = "Display all observations.")]
-public class ReadOptions
-{
-}
-
-[Verb("discussion", HelpText = "Display an observation and its comments.")]
-public class DiscussionOptions
-{
-    [Value(0, MetaName = "observation-id", Required = true,
-        HelpText = "The ID of the observation.")]
-    public long ObsID { get; set; }
-}
-
 public class Program
 {
     internal static HttpClient client = new() { BaseAddress = new Uri("http://localhost:5204") };
@@ -98,6 +49,20 @@ public class Program
                     return 1;
                 });
     }
+    /*
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    */
 
     static void DisplayParseError(IEnumerable<Error> errors)
     {
@@ -137,7 +102,7 @@ public class Program
     {
         try
         {
-            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
+            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
             //The field above does three things. Sends the HTTP GET to http://localhost:5204/observations
             //Receives the JSON the web service returns.
             //Converts that JSON into a List<Observation>
@@ -152,7 +117,7 @@ public class Program
     {
         try
         {
-            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
+            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
 
             UserInterface.DisplayObservations(observations);
         }
@@ -166,7 +131,7 @@ public class Program
     {
         try
         {
-            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
+            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
             bool observationExists = observations.Any(o => o.ObsID == obsID);
 
             if (!observationExists)
@@ -193,47 +158,47 @@ public class Program
     }
 
     public static bool Propose(string taxonID, long obsID)
-{
-    try
     {
-        var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
-        bool observationExists = observations.Any(o => o.ObsID == obsID);
-
-        if (!observationExists)
+        try
         {
-            System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
+            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
+            bool observationExists = observations.Any(o => o.ObsID == obsID);
+
+            if (!observationExists)
+            {
+                System.Console.WriteLine($"Observation with ID {obsID} does not exist.");
+                return false;
+            }
+
+            var taxon = Taxonomy.LoadEmbedded().GetById(taxonID);
+            if (taxon == null)
+            {
+                System.Console.WriteLine($"Taxon with ID {taxonID} does not exist.");
+                return false;
+            }
+
+            Proposal proposal = new Proposal(
+                obsID,
+                Environment.UserName,
+                taxonID,
+                DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+
+            client.PostAsJsonAsync("/proposal", proposal).Result.EnsureSuccessStatusCode();
+            UserInterface.DisplaySuccess();
+            return true;
+        }
+        catch (Exception e)
+        {
+            UserInterface.DisplayReadError(e);
             return false;
         }
-
-        var taxon = Taxonomy.LoadEmbedded().GetById(taxonID);
-        if (taxon == null)
-        {
-            System.Console.WriteLine($"Taxon with ID {taxonID} does not exist.");
-            return false;
-        }
-
-        Proposal proposal = new Proposal(
-            obsID,
-            Environment.UserName,
-            taxonID,
-            DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-
-        client.PostAsJsonAsync("/proposal", proposal).Result.EnsureSuccessStatusCode();
-        UserInterface.DisplaySuccess();
-        return true;
     }
-    catch (Exception e)
-    {
-        UserInterface.DisplayReadError(e);
-        return false;
-    }
-}
 
     static void Discussion(long obsID)
     {
         try
         {
-            var observation = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!
+            var observation = client.GetFromJsonAsync<List<Observation>>("/observations").Result!
             .FirstOrDefault(o => o.ObsID == obsID);
             if (observation == null)
             {
@@ -255,7 +220,7 @@ public class Program
     {
         try
         {
-            var observations = client.GetFromJsonAsync<List<Observation>> ("/observations").Result!;
+            var observations = client.GetFromJsonAsync<List<Observation>>("/observations").Result!;
             UserInterface.DisplayObservations(observations);
         }
         catch (Exception e)
