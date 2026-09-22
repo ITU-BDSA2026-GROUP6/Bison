@@ -7,6 +7,10 @@ var taxonomy = Taxonomy.LoadEmbedded();
 string csvDirectory = Path.Combine(AppContext.BaseDirectory, "CSVFiles");
 Directory.CreateDirectory(csvDirectory);
 
+
+// Creates or retrieves CSV-backed repositories for observations,
+// comments, and proposals.
+
 IDatabaseRepository<Observation> observationDatabase =
     CSVDatabase<Observation>.GetInstance(
         Path.Combine(csvDirectory, "observations.csv"));
@@ -18,6 +22,9 @@ IDatabaseRepository<Comment> commentDatabase =
 IDatabaseRepository<Proposal> proposalDatabase =
     CSVDatabase<Proposal>.GetInstance(
         Path.Combine(csvDirectory, "proposals.csv"));
+
+
+// POST endpoints for storing observations, comments, and proposals.
 
 app.MapPost("/observation", (Observation observation) =>
 {
@@ -36,6 +43,9 @@ app.MapPost("/proposal", (Proposal proposal) =>
     proposalDatabase.Store(proposal);
     return Results.Ok();
 });
+
+// GET endpoints for retrieving observations, comments,
+// and proposals from the repositories.
 
 app.MapGet("/observations", () =>
 {
