@@ -1,11 +1,29 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<IObservationService, ObservationService>();
+builder.Services.AddScoped<IObservationService, ObservationService>();
+
+// Load database connection via configuration
+string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<BisonDbContext>(options => options.UseSqlite(connectionString));
+
+
 
 
 var app = builder.Build();
+
+// Create a disposable service scope
+using (var scope = app.Services.CreateScope())
+{
+    // From the scope, get an instance of our database context.
+    // Through the `using` keyword, we make sure to dispose it after we are done.
+    using var context = scope.ServiceProvider.GetService<BisonDbContext>();
+    // Execute the migration from code.
+    context.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
