@@ -12,10 +12,9 @@ public class PublicModel : PageModel
     {
         _service = service;
     }
-
-    public ActionResult OnGet()
+    public async Task<IActionResult> OnGetAsync()
     {
-        Observations = _service.GetObservations();
+        Observations = await _service.GetObservations();
         return Page();
     }
 }
