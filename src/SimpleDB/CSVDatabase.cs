@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using System.Globalization;
 
 namespace SimpleDB;
+
 public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 {
     private readonly string _filePath;
@@ -12,17 +13,17 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
     };
 
     private static CSVDatabase<T>? _instance;
-    public static CSVDatabase<T> GetInstance(string filePath)
-{
-    if (_instance == null)
+    private static CSVDatabase<T> GetInstance(string filePath)
     {
-        _instance = new CSVDatabase<T>(filePath);
+        if (_instance == null)
+        {
+            _instance = new CSVDatabase<T>(filePath);
+        }
+
+        return _instance;
     }
 
-    return _instance;
-}
-
-    public CSVDatabase(string filePath)
+    private CSVDatabase(string filePath)
     {
         _filePath = filePath;
     }
