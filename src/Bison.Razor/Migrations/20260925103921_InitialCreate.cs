@@ -24,7 +24,7 @@ namespace Bison.Razor.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Messages",
+                name: "observations",
                 columns: table => new
                 {
                     ObservationId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -34,9 +34,9 @@ namespace Bison.Razor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Messages", x => x.ObservationId);
+                    table.PrimaryKey("PK_observations", x => x.ObservationId);
                     table.ForeignKey(
-                        name: "FK_Messages_Users_UserId",
+                        name: "FK_observations_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -44,8 +44,8 @@ namespace Bison.Razor.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_UserId",
-                table: "Messages",
+                name: "IX_observations_UserId",
+                table: "observations",
                 column: "UserId");
         }
 
@@ -53,7 +53,7 @@ namespace Bison.Razor.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Messages");
+                name: "Observations");
 
             migrationBuilder.DropTable(
                 name: "Users");
