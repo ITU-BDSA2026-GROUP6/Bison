@@ -14,7 +14,7 @@ public class PublicModel : PageModel
     }
     public async Task<IActionResult> OnGetAsync()
     {
-        Observations = await _service.GetObservations();
+        Observations = _service.GetObservations();
         return Page();
     }
 }

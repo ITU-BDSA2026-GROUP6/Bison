@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-sqlite3 /tmp/bison.db < data/schema.sql
-sqlite3 /tmp/bison.db < data/dump.sql
+DB="${BISONDBPATH:-$(dirname $(mktemp -u))/bison.db}"
+sqlite3 "$DB" < data/schema.sql && sqlite3 "$DB" < data/dump.sql
