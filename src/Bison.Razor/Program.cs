@@ -5,7 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<DBFacade>();
+var dbPath = Environment.GetEnvironmentVariable("BISONDBPATH")
+             ?? Path.Combine(Path.GetTempPath(), "bison.db");
+builder.Services.AddSingleton(new DBFacade(dbPath));
 builder.Services.AddScoped<IObservationService, ObservationService>();
 
 
