@@ -4,12 +4,10 @@ public class DBFacade
 {
     private readonly string _connectionString;
 
-    public DBFacade()
-    {
-        var path = Environment.GetEnvironmentVariable("BISONDBPATH")
-                   ?? Path.Combine(Path.GetTempPath(), "bison.db");
-        _connectionString = $"Data Source={path}";
-    }
+    public DBFacade(string path)
+{
+    _connectionString = $"Data Source={path}";
+}
 
     public List<ObservationViewModel> GetObservations()
     {
