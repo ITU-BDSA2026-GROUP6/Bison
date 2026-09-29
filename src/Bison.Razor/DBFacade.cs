@@ -3,33 +3,45 @@ using Microsoft.Data.Sqlite;
 public class DBFacade
 {
     private readonly string _connectionString;
-
+    
     public DBFacade(string path)
 {
     _connectionString = $"Data Source={path}";
 }
 
-    public List<ObservationViewModel> GetObservations()
+    public List<ObservationViewModel> GetObservations(int pageSize, int page = 1) //page = 1 means its a default value so it shows page 1 first
     {
         var sql = """
-            SELECT u.username, o.text, o.pub_date
-            FROM observation o
-            JOIN user u ON o.author_id = u.user_id
-            ORDER BY o.pub_date DESC
+            SELECT 
+                u.username, 
+                o.text, 
+                o.pub_date
+                FROM observation o
+            JOIN user u 
+                ON o.author_id = u.user_id
+            ORDER BY 
+                o.pub_date DESC 
+            LIMIT @limit OFFSET @offset
             """;
-        return Query(sql);
+        return Query(sql, ("@limit", pageSize), ("@offset", (page - 1) * pageSize));
     }
 
-    public List<ObservationViewModel> GetObservationsFromAuthor(string author)
+    public List<ObservationViewModel> GetObservationsFromAuthor(string author, int pageSize, int page = 1)
     {
         var sql = """
-            SELECT u.username, o.text, o.pub_date
+            SELECT 
+                u.username, 
+                o.text, 
+                o.pub_date
             FROM observation o
-            JOIN user u ON o.author_id = u.user_id
+            JOIN user u 
+                ON o.author_id = u.user_id
             WHERE u.username = @author
-            ORDER BY o.pub_date DESC
+            ORDER BY 
+                o.pub_date DESC
+            LIMIT @limit OFFSET @offset
             """;
-        return Query(sql, ("@author", author));
+        return Query(sql, ("@limit", pageSize), ("@offset", (page - 1) * pageSize), ("@author", author));
     }
 
     private List<ObservationViewModel> Query(string sql, params (string Name, object Value)[] parameters)

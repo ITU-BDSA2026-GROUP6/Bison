@@ -28,4 +28,5 @@ app.UseRouting();
 
 app.MapRazorPages();
 
+app.MapGet("/", () => Results.Redirect("/obs")); //Redirects to the observations instead of getting 404. 
 app.Run();
