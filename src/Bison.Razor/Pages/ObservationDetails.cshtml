@@ -25,10 +25,10 @@ else
     <p>@Model.Observation.Message</p>
     <small>@Model.Observation.Timestamp</small>
 
-    <h2>Proposals</h2>
-    @foreach (var proposal in Model.Proposals)
+   <h2>Proposals</h2>
+    @foreach (var proposal in Model.Proposals) 
     {
-        <p>@proposal.TaxonId — @proposal.Author</p>
+    <p>@proposal.Message — @proposal.Author</p>
     }
 
     <h2>Comments</h2>

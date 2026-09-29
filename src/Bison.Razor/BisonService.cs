@@ -42,16 +42,16 @@ public class ObservationService : IObservationService
 
     public ObservationViewModel? GetObservationById(int id)
     {
-        throw new NotImplementedException();
+        return _db.GetObservationById(id);
     }
 
     public List<CommentViewModel> GetCommentsForObservation(int observationId)
     {
-        throw new NotImplementedException();
+        return _db.GetCommentsForObservation(observationId);
     }
 
-    public List<ProposalViewModel> GetProposalsForObservation(int observationId)
+    public List<ProposalViewModel> GetProposalsForObservation(int observationId)    
     {
-        throw new NotImplementedException();
+        return _db.GetProposalsForObservation(observationId);
     }
 }
