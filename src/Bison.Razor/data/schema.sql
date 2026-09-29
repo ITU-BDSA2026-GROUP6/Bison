@@ -1,3 +1,4 @@
+
 drop table if exists user;
 create table user (
   user_id integer primary key autoincrement,
@@ -16,18 +17,22 @@ create table observation (
 
 drop table if exists comment;
 create table comment (
-  comment_id int primary key autoincrement,
-  observation_id int not null, 
-  author_id int not null, 
-  text string not null, 
-  pub_date int not null
+  comment_id integer primary key autoincrement,
+  observation_id integer not null,
+  author_id integer not null,
+  text string not null,
+  pub_date integer,
+  foreign key (observation_id) references observation(observation_id),
+  foreign key (author_id) references user(user_id)
 );
 
 drop table if exists proposal;
 create table proposal (
-  proposal_id int primary key autoincrement, 
-  observation_id int not null,
-  author_id int not null, 
-  text string not null, 
-  pub_date int not null
+  proposal_id integer primary key autoincrement,
+  observation_id integer not null,
+  author_id integer not null,
+  text string not null,
+  pub_date integer not null,
+  foreign key (observation_id) references observation(observation_id),
+  foreign key (author_id) references user(user_id)
 ); 

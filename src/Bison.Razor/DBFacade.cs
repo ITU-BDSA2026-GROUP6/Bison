@@ -13,6 +13,7 @@ public class DBFacade
     {
         var sql = """
             SELECT 
+                o.observation_id,
                 u.username, 
                 o.text, 
                 o.pub_date
@@ -30,6 +31,7 @@ public class DBFacade
     {
         var sql = """
             SELECT 
+                o.observation_id,
                 u.username, 
                 o.text, 
                 o.pub_date
@@ -42,6 +44,41 @@ public class DBFacade
             LIMIT @limit OFFSET @offset
             """;
         return Query(sql, ("@limit", pageSize), ("@offset", (page - 1) * pageSize), ("@author", author));
+    }
+
+    public List<CommentViewModel> GetCommentsForObservation(int observationId)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT
+                u.username,
+                c.text,
+                c.pub_date
+            FROM comment c
+            JOIN user u ON u.user_id = c.author_id
+            WHERE c.observation_id = @id
+            ORDER BY c.pub_date
+            """;
+
+        command.Parameters.AddWithValue("@id", observationId);
+
+        var comments = new List<CommentViewModel>();
+
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            comments.Add(new CommentViewModel(
+                reader.GetString(0),
+                reader.GetString(1),
+                UnixTimeStampToDateTimeString(reader.GetInt64(2))
+            ));
+        }
+
+        return comments;
     }
 
     private List<ObservationViewModel> Query(string sql, params (string Name, object Value)[] parameters)
@@ -61,11 +98,46 @@ public class DBFacade
         while (reader.Read())
         {
             result.Add(new ObservationViewModel(
-                reader.GetString(0),
+                reader.GetInt32(0),
                 reader.GetString(1),
-                UnixTimeStampToDateTimeString(reader.GetInt64(2))));
+                reader.GetString(2),
+                UnixTimeStampToDateTimeString(reader.GetInt64(3))));
         }
         return result;
+    }
+
+    public List<ProposalViewModel> GetProposalsForObservation(int observationId)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT
+                u.username,
+                p.text,
+                p.pub_date
+            FROM proposal p
+            JOIN user u ON u.user_id = p.author_id
+            WHERE p.observation_id = @id
+            ORDER BY p.pub_date
+            """;
+
+        command.Parameters.AddWithValue("@id", observationId);
+
+        var proposals = new List<ProposalViewModel>();
+
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            proposals.Add(new ProposalViewModel(
+                reader.GetString(0),
+                reader.GetString(1),
+                UnixTimeStampToDateTimeString(reader.GetInt64(2))
+            ));
+        }
+        return proposals;
     }
 
     public void AddObservation(String author, string text)
@@ -93,5 +165,33 @@ public class DBFacade
         DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dateTime = dateTime.AddSeconds(unixTimeStamp);
         return dateTime.ToString("MM/dd/yy H:mm:ss");
+    }
+
+    public ObservationViewModel? GetObservationById(int id)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT o.observation_id, u.username, o.text, o.pub_date
+            FROM observation o
+            JOIN user u ON u.user_id = o.author_id
+            WHERE o.observation_id = @id
+            """;
+
+        command.Parameters.AddWithValue("@id", id);
+
+        using var reader = command.ExecuteReader();
+
+        if (!reader.Read())
+            return null;
+
+        return new ObservationViewModel(
+            reader.GetInt32(0),
+            reader.GetString(1),
+            reader.GetString(2),
+            UnixTimeStampToDateTimeString(reader.GetInt64(3))
+        );
     }
 }
