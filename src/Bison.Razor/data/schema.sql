@@ -13,3 +13,21 @@ create table observation (
   text string not null,
   pub_date integer
 );
+
+drop table if exists comment;
+create table comment (
+  comment_id int primary key autoincrement,
+  observation_id int not null, 
+  author_id int not null, 
+  text string not null, 
+  pub_date int not null
+);
+
+drop table if exists proposal;
+create table proposal (
+  proposal_id int primary key autoincrement, 
+  observation_id int not null,
+  author_id int not null, 
+  text string not null, 
+  pub_date int not null
+); 
