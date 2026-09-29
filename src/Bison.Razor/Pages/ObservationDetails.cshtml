@@ -1,0 +1,39 @@
+@page "/ob/{id:int?}"
+@model Bison.Razor.Pages.ObservationDetailsModel
+@{
+    Layout = "Shared/_Layout";
+}
+
+@if (Model.Observation is null)
+{
+    <h2>Observations</h2>
+
+    @foreach (var observation in Model.Observations)
+    {
+        <p>
+            <a href="/ob/@observation.ObservationId">
+                @observation.Message
+            </a>
+            by @observation.Author
+        </p>
+    }
+}
+else
+{
+    <h2>Observation</h2>
+    <p><strong>@Model.Observation.Author</strong></p>
+    <p>@Model.Observation.Message</p>
+    <small>@Model.Observation.Timestamp</small>
+
+   <h2>Proposals</h2>
+    @foreach (var proposal in Model.Proposals) 
+    {
+    <p>@proposal.Message — @proposal.Author</p>
+    }
+
+    <h2>Comments</h2>
+    @foreach (var comment in Model.Comments)
+    {
+        <p><strong>@comment.Author:</strong> @comment.Message</p>
+    }
+}

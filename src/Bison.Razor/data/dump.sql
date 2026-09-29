@@ -506,3 +506,6 @@ INSERT INTO observation VALUES(497,1,'One Great Blue Heron on the flooded field 
 INSERT INTO observation VALUES(498,2,'A Glossy Ibis wading through the reed bed. Bare skin on the face and head.',1790811961);
 INSERT INTO observation VALUES(499,3,'Several Grey Herons feeding together at the lagoon. Hunts alone along the edge of the water.',1790813500);
 INSERT INTO observation VALUES(500,3,'Great Egret on the pond at the edge of town. Nests in colonies, often in trees near water.',1790896667);
+/* test rows */
+INSERT INTO comment VALUES(1, 1, 2, 'I saw the same bird yesterday.', 1791000000);
+INSERT INTO proposal VALUES(1, 1, 3, 'GBIF:2480836', 1791000100);
