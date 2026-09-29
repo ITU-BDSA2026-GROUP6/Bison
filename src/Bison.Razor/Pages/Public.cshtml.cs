@@ -7,7 +7,7 @@ public class PublicModel : PageModel
 {
     private readonly IObservationService _service;
     public List<ObservationViewModel> Observations { get; set; }
-
+    public int page {get; set;}
     public PublicModel(IObservationService service)
     {
         _service = service;
