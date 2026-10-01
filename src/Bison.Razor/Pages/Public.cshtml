@@ -35,17 +35,17 @@
         var currentPage = int.TryParse(HttpContext.Request.Query["page"], out var page)
         ? Math.Max(page, 1)
         : 1;
-}
-
-<nav aria-label="Pagination">
-    @if (currentPage > 1)
-    {
-        <a href="/obs?page=@(currentPage - 1)">Previous</a>
     }
 
-    @if (Model.Observations.Count == 32)
-    {
-        <a href="/obs?page=@(currentPage + 1)">Next</a>
-    }
-</nav>
+    <nav aria-label="Pagination">
+        @if (currentPage > 1)
+        {
+            <a href="/obs?page=@(currentPage - 1)">Previous</a>
+        }
+
+        @if (Model.Observations.Count == 32)
+        {
+            <a href="/obs?page=@(currentPage + 1)">Next</a>
+        }
+    </nav>
 </div>
