@@ -43,7 +43,7 @@ input[type="submit"] {
 div.page {
   background: white;
   border: 1px solid #cc6e6e;
-  width: 700px;
+  width: min(900px, calc(100% - 32px));
   margin: 30px auto;
 }
 
@@ -140,6 +140,23 @@ div.page ul.observations li {
 
 div.page ul.observations p {
   margin: 0;
+}
+
+div.page ul.observations .observation-author {
+  margin-bottom: 4px;
+}
+
+div.page ul.observations a {
+  text-decoration: none;
+}
+
+div.page ul.observations .observation-message {
+  line-height: 1.45;
+}
+
+div.page ul.observations .observation-timestamp {
+  display: block;
+  margin-top: 4px;
 }
 
 div.page ul.observations li img {
@@ -286,4 +303,72 @@ ul.nav li a {
 
 ul.nav li a:hover {
     background-color: #8b4949;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 18px 0 9px;
+}
+
+.pagination-item {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d7dce1;
+  border-radius: 4px;
+  background: #fff;
+  color: #555;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.pagination a.pagination-item:hover {
+  border-color: #168bea;
+  color: #168bea;
+}
+
+.pagination-item.active {
+  border-color: #168bea;
+  background: #168bea;
+  color: #fff;
+}
+
+.pagination-arrow {
+  color: #a8afb6;
+  font-size: 26px;
+  font-weight: 300;
+}
+
+.pagination-item.disabled {
+  background: #fafafa;
+  color: #d5d9dd;
+  box-shadow: none;
+}
+
+.pagination-ellipsis {
+  width: 21px;
+  color: #a8afb6;
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+}
+
+@media (max-width: 520px) {
+  .pagination {
+    gap: 4px;
+  }
+
+  .pagination-item {
+    width: 27px;
+    height: 27px;
+  }
 }

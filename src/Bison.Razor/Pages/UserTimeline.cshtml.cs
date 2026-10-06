@@ -6,7 +6,9 @@ namespace Bison.Razor.Pages;
 public class UserTimelineModel : PageModel
 {
     private readonly IObservationService _service;
-    public List<ObservationViewModel> Observations { get; set; }
+    public List<ObservationViewModel> Observations { get; set; } = [];
+    public int CurrentPage { get; private set; }
+    public int TotalPages { get; private set; }
 
     public UserTimelineModel(IObservationService service)
     {
@@ -15,9 +17,11 @@ public class UserTimelineModel : PageModel
 
     public ActionResult OnGet(string author, [FromQuery] int page = 1)
     {
-        if (page < 1) page = 1;
-
-        Observations = _service.GetObservationsFromAuthor(author, page);
+        CurrentPage = Math.Max(page, 1);
+        TotalPages = Math.Max(1, (int)Math.Ceiling(
+            _service.GetObservationCountFromAuthor(author) / (double)ObservationService.PageSize));
+        CurrentPage = Math.Min(CurrentPage, TotalPages);
+        Observations = _service.GetObservationsFromAuthor(author, CurrentPage);
         return Page();
     }
 }

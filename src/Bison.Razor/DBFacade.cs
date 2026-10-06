@@ -46,6 +46,38 @@ public class DBFacade
         return Query(sql, ("@limit", pageSize), ("@offset", (page - 1) * pageSize), ("@author", author));
     }
 
+    public int GetObservationCount()
+    {
+        return Count("SELECT COUNT(*) FROM observation");
+    }
+
+    public int GetObservationCountFromAuthor(string author)
+    {
+        const string sql = """
+            SELECT COUNT(*)
+            FROM observation o
+            JOIN user u ON o.author_id = u.user_id
+            WHERE u.username = @author
+            """;
+
+        return Count(sql, ("@author", author));
+    }
+
+    private int Count(string sql, params (string Name, object Value)[] parameters)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        foreach (var (name, value) in parameters)
+        {
+            command.Parameters.AddWithValue(name, value);
+        }
+
+        return Convert.ToInt32(command.ExecuteScalar());
+    }
+
     public List<CommentViewModel> GetCommentsForObservation(int observationId)
     {
         using var connection = new SqliteConnection(_connectionString);
