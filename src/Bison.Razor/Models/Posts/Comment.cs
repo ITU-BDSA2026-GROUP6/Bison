@@ -1,4 +1,4 @@
-using Bison.Razor.Models;
+namespace Bison.Razor.Models;
 
 public class Comment : Post
 {
