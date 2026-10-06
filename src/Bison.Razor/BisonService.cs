@@ -10,6 +10,8 @@ public interface IObservationService
 {
     public List<ObservationViewModel> GetObservations(int page);
     public List<ObservationViewModel> GetObservationsFromAuthor(string author, int page);
+    public int GetObservationCount();
+    public int GetObservationCountFromAuthor(string author);
 
         ObservationViewModel? GetObservationById(int id);
         List<CommentViewModel> GetCommentsForObservation(int observationId);
@@ -35,6 +37,17 @@ public class ObservationService : IObservationService
         // filter by the provided author name
         return _db.GetObservationsFromAuthor(author, PageSize, page);
     }
+
+    public int GetObservationCount()
+    {
+        return _db.GetObservationCount();
+    }
+
+    public int GetObservationCountFromAuthor(string author)
+    {
+        return _db.GetObservationCountFromAuthor(author);
+    }
+
     public void AddObservation(string author, string message)
     {
         _db.AddObservation(author, message);
