@@ -1,194 +1,72 @@
-using Microsoft.Data.Sqlite;
+using Bison.Razor.Models;
 
 public class DBFacade
 {
-    private readonly string _connectionString;
-    
-    public DBFacade(string path)
-{
-    _connectionString = $"Data Source={path}";
-}
+    private const string DateFormat = "MM/dd/yy H:mm:ss";
+    private readonly BisonDbContext _context;
+
+    public DBFacade(BisonDbContext context)
+    {
+        _context = context;
+    }
 
     public List<ObservationViewModel> GetObservations(int pageSize, int page = 1) //page = 1 means its a default value so it shows page 1 first
     {
-        var sql = """
-            SELECT 
-                o.observation_id,
-                u.username, 
-                o.text, 
-                o.pub_date
-                FROM observation o
-            JOIN user u 
-                ON o.author_id = u.user_id
-            ORDER BY 
-                o.pub_date DESC 
-            LIMIT @limit OFFSET @offset
-            """;
-        return Query(sql, ("@limit", pageSize), ("@offset", (page - 1) * pageSize));
+        return Page(_context.Observations, pageSize, page);
     }
 
     public List<ObservationViewModel> GetObservationsFromAuthor(string author, int pageSize, int page = 1)
     {
-        var sql = """
-            SELECT 
-                o.observation_id,
-                u.username, 
-                o.text, 
-                o.pub_date
-            FROM observation o
-            JOIN user u 
-                ON o.author_id = u.user_id
-            WHERE u.username = @author
-            ORDER BY 
-                o.pub_date DESC
-            LIMIT @limit OFFSET @offset
-            """;
-        return Query(sql, ("@limit", pageSize), ("@offset", (page - 1) * pageSize), ("@author", author));
+        return Page(_context.Observations.Where(o => o.Author.Name == author), pageSize, page);
     }
 
     public int GetObservationCount()
     {
-        return Count("SELECT COUNT(*) FROM observation");
+        return _context.Observations.Count();
     }
 
     public int GetObservationCountFromAuthor(string author)
     {
-        const string sql = """
-            SELECT COUNT(*)
-            FROM observation o
-            JOIN user u ON o.author_id = u.user_id
-            WHERE u.username = @author
-            """;
-
-        return Count(sql, ("@author", author));
-    }
-
-    private int Count(string sql, params (string Name, object Value)[] parameters)
-    {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
-        using var command = connection.CreateCommand();
-        command.CommandText = sql;
-        foreach (var (name, value) in parameters)
-        {
-            command.Parameters.AddWithValue(name, value);
-        }
-
-        return Convert.ToInt32(command.ExecuteScalar());
+        return _context.Observations.Count(o => o.Author.Name == author);
     }
 
     public List<CommentViewModel> GetCommentsForObservation(int observationId)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
-        using var command = connection.CreateCommand();
-        command.CommandText = """
-            SELECT
-                u.username,
-                c.text,
-                c.pub_date
-            FROM comment c
-            JOIN user u ON u.user_id = c.author_id
-            WHERE c.observation_id = @id
-            ORDER BY c.pub_date
-            """;
-
-        command.Parameters.AddWithValue("@id", observationId);
-
-        var comments = new List<CommentViewModel>();
-
-        using var reader = command.ExecuteReader();
-
-        while (reader.Read())
-        {
-            comments.Add(new CommentViewModel(
-                reader.GetString(0),
-                reader.GetString(1),
-                UnixTimeStampToDateTimeString(reader.GetInt64(2))
-            ));
-        }
-
-        return comments;
+        return _context.Comments
+            .Where(c => c.ObservationId == observationId)
+            .OrderBy(c => c.TimeStamp)
+            .Select(c => new CommentViewModel(c.Author.Name, c.Text, c.TimeStamp.ToString(DateFormat)))
+            .ToList();
     }
 
-    private List<ObservationViewModel> Query(string sql, params (string Name, object Value)[] parameters)
+    // Newest first, paginated
+    private static List<ObservationViewModel> Page(IQueryable<Observation> query, int pageSize, int page)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
-        using var command = connection.CreateCommand();
-        command.CommandText = sql;
-        foreach (var (name, value) in parameters)
-        {
-            command.Parameters.AddWithValue(name, value);
-        }
-
-        var result = new List<ObservationViewModel>();
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            result.Add(new ObservationViewModel(
-                reader.GetInt32(0),
-                reader.GetString(1),
-                reader.GetString(2),
-                UnixTimeStampToDateTimeString(reader.GetInt64(3))));
-        }
-        return result;
+        return query
+            .OrderByDescending(o => o.TimeStamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(o => new ObservationViewModel(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat)))
+            .ToList();
     }
 
     public List<ProposalViewModel> GetProposalsForObservation(int observationId)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
-        using var command = connection.CreateCommand();
-        command.CommandText = """
-            SELECT
-                u.username,
-                p.text,
-                p.pub_date
-            FROM proposal p
-            JOIN user u ON u.user_id = p.author_id
-            WHERE p.observation_id = @id
-            ORDER BY p.pub_date
-            """;
-
-        command.Parameters.AddWithValue("@id", observationId);
-
-        var proposals = new List<ProposalViewModel>();
-
-        using var reader = command.ExecuteReader();
-
-        while (reader.Read())
-        {
-            proposals.Add(new ProposalViewModel(
-                reader.GetString(0),
-                reader.GetString(1),
-                UnixTimeStampToDateTimeString(reader.GetInt64(2))
-            ));
-        }
-        return proposals;
+        return _context.Proposals
+            .Where(p => p.ObservationId == observationId)
+            .OrderBy(p => p.TimeStamp)
+            .Select(p => new ProposalViewModel(p.Author.Name, p.Text, p.TimeStamp.ToString(DateFormat)))
+            .ToList();
     }
 
     public void AddObservation(String author, string text)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        // Unknown author inserts nothing, same as the old SQL
+        var a = _context.Authors.FirstOrDefault(a => a.Name == author);
+        if (a is null) return;
 
-        using var command = connection.CreateCommand();
-        command.CommandText = """
-        INSERT INTO observation (author_id, text, pub_date)
-        SELECT user_id, @text, @pubDate
-        FROM user
-        WHERE username = @author
-        """;
-
-        command.Parameters.AddWithValue("@author", author);
-        command.Parameters.AddWithValue("@text", text);
-        command.Parameters.AddWithValue("@pubDate", DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-        command.ExecuteNonQuery();
+        _context.Observations.Add(new Observation { Author = a, Text = text, TimeStamp = DateTime.UtcNow });
+        _context.SaveChanges();
     }
 
     private static string UnixTimeStampToDateTimeString(double unixTimeStamp)
@@ -201,29 +79,9 @@ public class DBFacade
 
     public ObservationViewModel? GetObservationById(int id)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
-        using var command = connection.CreateCommand();
-        command.CommandText = """
-            SELECT o.observation_id, u.username, o.text, o.pub_date
-            FROM observation o
-            JOIN user u ON u.user_id = o.author_id
-            WHERE o.observation_id = @id
-            """;
-
-        command.Parameters.AddWithValue("@id", id);
-
-        using var reader = command.ExecuteReader();
-
-        if (!reader.Read())
-            return null;
-
-        return new ObservationViewModel(
-            reader.GetInt32(0),
-            reader.GetString(1),
-            reader.GetString(2),
-            UnixTimeStampToDateTimeString(reader.GetInt64(3))
-        );
+        return _context.Observations
+            .Where(o => o.PostId == id)
+            .Select(o => new ObservationViewModel(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat)))
+            .FirstOrDefault();
     }
 }

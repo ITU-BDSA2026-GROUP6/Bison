@@ -7,11 +7,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 var dbPath = Environment.GetEnvironmentVariable("BISONDBPATH")
              ?? Path.Combine(Path.GetTempPath(), "bison.db");
-builder.Services.AddSingleton(new DBFacade(dbPath));
+builder.Services.AddDbContext<BisonDbContext>(options => options.UseSqlite($"Data Source={dbPath}"));
+builder.Services.AddScoped<DBFacade>(); // Scoped, since DbContext is scoped
 builder.Services.AddScoped<IObservationService, ObservationService>();
 
 
 var app = builder.Build();
+
+// Create/update the database from the migrations
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetRequiredService<BisonDbContext>().Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
