@@ -1,12 +1,28 @@
 namespace Bison.Razor.Tests;
 
+using Bison.Razor.Models;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+
 public class ObservationServiceTests
 {
     private readonly ObservationService _service;
 
-    public ObservationServiceTests()
+        public ObservationServiceTests()
     {
-        var db = new DBFacade(TestHelpers.GetSeededDbPath());
+        // In-memory SQLite, lives as long as the connection is open
+        var connection = new SqliteConnection("Data Source=:memory:");
+        connection.Open();
+        var options = new DbContextOptionsBuilder<BisonDbContext>().UseSqlite(connection).Options;
+        var context = new BisonDbContext(options);
+        context.Database.EnsureCreated();
+
+        // Minimal test data, replace with DbInitializer once 1d is done
+        var adrian = new Author { Name = "Adrian", Email = "adrian@example.com" };
+        context.Observations.Add(new Observation { Author = adrian, Text = "Saw a heron", TimeStamp = DateTime.UtcNow });
+        context.SaveChanges();
+
+        var db = new DBFacade(context);
         _service = new ObservationService(db);
     }
 
