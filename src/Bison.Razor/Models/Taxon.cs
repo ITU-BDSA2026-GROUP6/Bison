@@ -3,8 +3,8 @@ namespace Bison.Razor.Models;
 public class Taxon
 {
     public int TaxonId { get; set; }
-    public string DwcTaxonId { get; set; } = string.Empty;
-    public string DanishVernacularName { get; set; } = string.Empty;
+    public string dwc_TaxonID { get; set; } = string.Empty;
+    public string? VernacularName { get; set; }
 
     public int? ParentId { get; set; }
     public Taxon? Parent { get; set; }
