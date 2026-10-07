@@ -17,7 +17,9 @@ var app = builder.Build();
 // Create/update the database from the migrations
 using (var scope = app.Services.CreateScope())
 {
-    scope.ServiceProvider.GetRequiredService<BisonDbContext>().Database.Migrate();
+    var context = scope.ServiceProvider.GetRequiredService<BisonDbContext>();
+    context.Database.Migrate();
+    DbInitializer.SeedDatabase(context);
 }
 
 // Configure the HTTP request pipeline.
