@@ -22,7 +22,8 @@ public class ObservationServiceTests
         context.Observations.Add(new Observation { Author = adrian, Text = "Saw a heron", TimeStamp = DateTime.UtcNow });
         context.SaveChanges();
 
-        var db = new DBFacade(context);
+        var repo = new PostRepository(context);
+        var db = new DBFacade(repo);
         _service = new ObservationService(db);
     }
 
