@@ -1,8 +1,8 @@
 namespace Bison.Razor.Models;
 
-public class User
+public class Author
 {
-    public int UserId { get; set; }
+    public int AuthorId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public ICollection<Post> Posts { get; set; } = new List<Post>();
