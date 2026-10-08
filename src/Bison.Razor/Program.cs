@@ -8,6 +8,7 @@ builder.Services.AddRazorPages();
 var dbPath = Environment.GetEnvironmentVariable("BISONDBPATH")
              ?? Path.Combine(Path.GetTempPath(), "bison.db");
 builder.Services.AddDbContext<BisonDbContext>(options => options.UseSqlite($"Data Source={dbPath}"));
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<DBFacade>(); // Scoped, since DbContext is scoped
 builder.Services.AddScoped<IObservationService, ObservationService>();
 
