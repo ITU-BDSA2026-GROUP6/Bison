@@ -12,4 +12,15 @@ public class Taxon
 
     public ICollection<Observation> Observations { get; set; } = new List<Observation>();
     public ICollection<Proposal> Proposals { get; set; } = new List<Proposal>();
+
+    public bool isSubTaxon(Taxon ancestor)
+{
+    var current = Parent;
+    while (current != null)
+    {
+        if (current.TaxonId == ancestor.TaxonId) return true;
+        current = current.Parent;
+    }
+    return false;
+}
 }
