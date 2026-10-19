@@ -1,5 +1,6 @@
 using Bison.Razor.Models;
 using Microsoft.EntityFrameworkCore;
+using Bison.Razor.Verified;
 
 public class PostRepository : IPostRepository
 {
@@ -21,9 +22,31 @@ public class PostRepository : IPostRepository
     }
 
     public List<Observation> GetObservationsByTaxon(int taxonId, int pageSize, int page)
+{
+    return FilterByTaxon(taxonId)
+        .OrderByDescending(o => o.TimeStamp)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+}
+
+    public int GetObservationCountByTaxon(int taxonId) => FilterByTaxon(taxonId).Length;
+
+    private Observation[] FilterByTaxon(int taxonId)
     {
-        return Page(_context.Observations.Where(o => o.TaxonId == taxonId), pageSize, page);
-    }
+        // Load all taxa so EF Core fills in the whole Parent chain, which isSubTaxon needs
+        var taxa = _context.Taxons.ToList();
+        var root = taxa.FirstOrDefault(t => t.TaxonId == taxonId);
+        if (root == null) return [];
+
+        // Only observations with a taxon, since getTaxon() promises non-null
+        var observations = _context.Observations
+            .Include(o => o.Author)
+            .Where(o => o.TaxonId != null)
+            .ToArray();
+
+        return TaxonFilter.FilterBy(root, observations);
+}
 
     private static List<Observation> Page(IQueryable<Observation> query, int pageSize, int page)
     {
@@ -39,9 +62,6 @@ public class PostRepository : IPostRepository
 
     public int GetObservationCountByAuthor(string authorName) =>
         _context.Observations.Count(o => o.Author.Name == authorName);
-
-    public int GetObservationCountByTaxon(int taxonId) =>
-        _context.Observations.Count(o => o.TaxonId == taxonId);
 
     public Observation? GetObservationById(int id)
     {
