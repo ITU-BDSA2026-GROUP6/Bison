@@ -1,17 +1,55 @@
 ---
 name: User Story
-about: This is a user story issue template
-title: ''
-labels: User story
+about: Beskriv et behov fra en brugers perspektiv
+title: "[Story] <kort titel>"
+labels: user-story
 assignees: ''
-
 ---
 
-I as a <Type of user> 
-want to <solve issue> 
-so that <solution benefit>
+## User Story
 
-Accepatance criteria
-* <solution step 1>
-* <solution step 2>
-* <solution step 3>
+**As a** <type of user / role>
+**I want to** <goal / what needs to be solved>
+**so that** <benefit / why it matters>
+
+## Context / Background
+<!-- Why is this needed? What is the current situation or problem? Link related issues, screenshots or logs. -->
+
+## Acceptance Criteria
+<!-- Concrete, testable conditions. Every point must be true before the issue can be closed. -->
+- [ ] <criterion 1>
+- [ ] <criterion 2>
+- [ ] <criterion 3>
+
+<!-- Optional: Given/When/Then format for more precise criteria -->
+<!--
+**Scenario:** <name>
+- **Given** <starting state>
+- **When** <action>
+- **Then** <expected result>
+-->
+
+## Out of Scope
+<!-- What is deliberately NOT part of this issue? -->
+- <item>
+
+## Tasks
+<!-- Optional: technical breakdown of the work -->
+- [ ] <task 1>
+- [ ] <task 2>
+
+## Dependencies
+<!-- Other issues, PRs or people this depends on -->
+- Blocked by: #<issue>
+- Related to: #<issue>
+
+## Definition of Done
+- [ ] All acceptance criteria are met
+- [ ] Code is reviewed and merged
+- [ ] Tests are written and passing
+- [ ] Documentation is updated (if relevant)
+
+## Additional Information
+<!-- Priority, estimate, design links, notes -->
+- **Priority:** <Low / Medium / High>
+- **Estimate:** <story points / time>
