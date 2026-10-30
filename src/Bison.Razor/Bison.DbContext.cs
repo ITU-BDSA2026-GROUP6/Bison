@@ -1,7 +1,7 @@
 using Bison.Razor.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
-public class BisonDbContext : DbContext
+public class BisonDbContext : IdentityDbContext<BisonUser>
 {
     public DbSet<Post> Posts { get; set; }
     public DbSet<Observation> Observations { get; set; }
@@ -14,6 +14,7 @@ public class BisonDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         // A tabel pr class tabel
         modelBuilder.Entity<Post>().UseTptMappingStrategy();
     }

@@ -12,6 +12,8 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<DBFacade>(); // Scoped, since DbContext is scoped
 builder.Services.AddScoped<IObservationService, ObservationService>();
 
+builder.Services.AddDefaultIdentity<BisonUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<BisonDbContext>();
 
 var app = builder.Build();
 
@@ -36,9 +38,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapRazorPages();
 
 app.MapGet("/", () => Results.Redirect("/obs")); //Redirects to the observations instead of getting 404. 
 app.Run();
+
 
 public partial class Program { }
