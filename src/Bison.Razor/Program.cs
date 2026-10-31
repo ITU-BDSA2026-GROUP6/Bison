@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +13,17 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<DBFacade>(); // Scoped, since DbContext is scoped
 builder.Services.AddScoped<IObservationService, ObservationService>();
 
-builder.Services.AddDefaultIdentity<BisonUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<BisonDbContext>();
+//Password requirements
+builder.Services.AddDefaultIdentity<BisonUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Password.RequireDigit = false; 
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false; 
+    options.Password.RequireDigit = false; 
+    options.Password.RequireNonAlphanumeric = false;
+})
+.AddEntityFrameworkStores<BisonDbContext>(); 
 
 var app = builder.Build();
 
