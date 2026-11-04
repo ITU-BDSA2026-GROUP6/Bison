@@ -23,7 +23,20 @@ builder.Services.AddDefaultIdentity<BisonUser>(options =>
     options.Password.RequireDigit = false; 
     options.Password.RequireNonAlphanumeric = false;
 })
-.AddEntityFrameworkStores<BisonDbContext>(); 
+.AddEntityFrameworkStores<BisonDbContext>();
+
+// GitHub login is only enabled when configured, since the app fails on every request otherwise.
+var gitHubClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+var gitHubClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+if (!string.IsNullOrEmpty(gitHubClientId) && !string.IsNullOrEmpty(gitHubClientSecret))
+{
+    builder.Services.AddAuthentication()
+        .AddGitHub(options =>
+        {
+            options.ClientId = gitHubClientId;
+            options.ClientSecret = gitHubClientSecret;
+        });
+}
 
 var app = builder.Build();
 
