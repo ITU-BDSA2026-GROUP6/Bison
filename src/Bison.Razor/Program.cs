@@ -23,7 +23,14 @@ builder.Services.AddDefaultIdentity<BisonUser>(options =>
     options.Password.RequireDigit = false; 
     options.Password.RequireNonAlphanumeric = false;
 })
-.AddEntityFrameworkStores<BisonDbContext>(); 
+.AddEntityFrameworkStores<BisonDbContext>();
+
+builder.Services.AddAuthentication()
+    .AddGitHub(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"]!;
+    });
 
 var app = builder.Build();
 
