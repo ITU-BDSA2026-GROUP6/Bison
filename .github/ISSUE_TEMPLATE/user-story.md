@@ -2,14 +2,14 @@
 name: User Story
 about: Beskriv et behov fra en brugers perspektiv
 title: "[Story] <kort titel>"
-labels: ''
+labels: User story
 assignees: ''
 
 ---
 
 ## User Story
 
-**As a** <type of user / role>, I want to** <goal / what needs to be solved>, so that** <benefit / why it matters>
+As a user... I want to... so I can...
 
 ## Context / Background
 <!-- Why is this needed? What is the current situation or problem? Link related issues, screenshots or logs. -->
