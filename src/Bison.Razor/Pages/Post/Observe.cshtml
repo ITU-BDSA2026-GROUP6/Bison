@@ -1,0 +1,22 @@
+@page "/Observe"
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Bison.Razor.Pages.Post.ObserveModel
+@{
+    Layout = "Shared/_Layout";
+}
+<div>
+   <h1>New Observation</h1>
+
+    <form method="post" asp-page="Observe">
+        <label asp-for="Message">Message:</label>
+        <input asp-for="Message" required maxlength="128"></input>
+        <button type="submit">Submit</button>
+
+        </>
+        -- To do: Add images to observations. --
+        -- To do: Add location to observations. --
+        -- To do: Add Taxonomy to observations. --
+        </>
+     </form>
+
+</div>

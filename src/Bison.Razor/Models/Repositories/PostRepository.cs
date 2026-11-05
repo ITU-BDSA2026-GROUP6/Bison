@@ -93,7 +93,13 @@ public class PostRepository : IPostRepository
     public void AddObservation(string authorName, string text)
     {
         var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
-        if (author is null) return; // samme adfærd som før
+        if (author is null)
+        {
+            // If the author doesn't exist, create a new one
+            author = new Author { Name = authorName };
+            _context.Authors.Add(author);
+            _context.SaveChanges();
+        } // samme adfærd som før
 
         _context.Observations.Add(new Observation { Author = author, Text = text, TimeStamp = DateTime.UtcNow });
         _context.SaveChanges();

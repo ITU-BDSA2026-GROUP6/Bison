@@ -16,6 +16,7 @@ public interface IObservationService
         ObservationViewModel? GetObservationById(int id);
         List<CommentViewModel> GetCommentsForObservation(int observationId);
         List<ProposalViewModel> GetProposalsForObservation(int observationId);
+    void AddObservation(string author, string message);
 }
 
 public class ObservationService : IObservationService
