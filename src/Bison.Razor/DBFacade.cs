@@ -38,9 +38,9 @@ public class DBFacade
             .ToList();
     }
 
-    public void AddObservation(string author, string text)
+    public void AddObservation(string author, string text, int? taxonId)
     {
-        _repo.AddObservation(author, text);
+        _repo.AddObservation(author, text, taxonId);
     }
 
     public ObservationViewModel? GetObservationById(int id)

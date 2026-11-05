@@ -16,6 +16,7 @@ public interface IObservationService
         ObservationViewModel? GetObservationById(int id);
         List<CommentViewModel> GetCommentsForObservation(int observationId);
         List<ProposalViewModel> GetProposalsForObservation(int observationId);
+    void AddObservation(string author, string message, int? taxonId = null);
 }
 
 public class ObservationService : IObservationService
@@ -48,9 +49,9 @@ public class ObservationService : IObservationService
         return _db.GetObservationCountFromAuthor(author);
     }
 
-    public void AddObservation(string author, string message)
+    public void AddObservation(string author, string message, int? taxonId = null)
     {
-        _db.AddObservation(author, message);
+        _db.AddObservation(author, message, taxonId);
     }
 
     public ObservationViewModel? GetObservationById(int id)

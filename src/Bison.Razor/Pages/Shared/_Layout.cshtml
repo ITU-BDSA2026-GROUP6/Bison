@@ -17,6 +17,10 @@
                         <a href="/">Public Observations</a> |
                         <a href="Identity/Account/Logout" >Logout [@(User.Identity.Name)]</a>
                     </div>
+
+                    <div>
+                        <a href="/Observe">New Observation</a>
+                    </div>
                 }
                 else
                 {
@@ -24,8 +28,10 @@
                         <a href="/">Public Observations</a> |
                         <a href="Identity/Account/Register" >Register</a>
                         <a href="Identity/Account/Login" >Login</a>
-                    </div>
+                        <a href="/Identity/Account/Login?ReturnUrl=%2FObserve">New Observation</a>
+                   </div>
                 }
+        
     </div>
 
     <div class="body">
