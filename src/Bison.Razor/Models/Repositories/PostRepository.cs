@@ -90,7 +90,7 @@ public class PostRepository : IPostRepository
             .ToList();
     }
 
-    public void AddObservation(string authorName, string text)
+    public void AddObservation(string authorName, string text, int? taxonId = null)
     {
         var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
         if (author is null)
@@ -101,7 +101,17 @@ public class PostRepository : IPostRepository
             _context.SaveChanges();
         } // samme adfærd som før
 
-        _context.Observations.Add(new Observation { Author = author, Text = text, TimeStamp = DateTime.UtcNow });
+        var taxon = _context.Taxons.Find(taxonId);
+        if (taxon is null && taxonId.HasValue)
+        {
+            throw new ArgumentException($"Taxon with ID {taxonId} does not exist.");
+        }
+
+        _context.Observations.Add(new Observation { Author = author, Text = text, TimeStamp = DateTime.UtcNow, TaxonId = taxonId });
         _context.SaveChanges();
+    }
+    public List<Taxon> GetAllTaxons()
+    {
+        return _context.Taxons.ToList();
     }
 }

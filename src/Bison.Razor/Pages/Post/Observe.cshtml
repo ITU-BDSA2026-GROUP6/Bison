@@ -10,13 +10,14 @@
     <form method="post" asp-page="Observe">
         <label asp-for="Message">Message:</label>
         <input asp-for="Message" required maxlength="128"></input>
+        <label asp-for="SelectedTaxonId">Taxon:</label>
+        <select asp-for="SelectedTaxonId" asp-items="Model.Taxons">
+            <option value="">-- Select a taxon --(Optional)</option>
+        </select>
         <button type="submit">Submit</button>
-
-        </>
+        @*
         -- To do: Add images to observations. --
-        -- To do: Add location to observations. --
-        -- To do: Add Taxonomy to observations. --
-        </>
+        *@
      </form>
 
 </div>
