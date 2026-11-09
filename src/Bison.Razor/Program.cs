@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,12 +18,12 @@ builder.Services.AddScoped<IObservationService, ObservationService>();
 builder.Services.AddDefaultIdentity<BisonUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
-    options.Password.RequireDigit = false; 
+    options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false; 
-    options.Password.RequireDigit = false; 
+    options.Password.RequireUppercase = false;
+    options.Password.RequireDigit = false;
     options.Password.RequireNonAlphanumeric = false;
-})
+}).AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<BisonDbContext>();
 
 // GitHub login is only enabled when configured, since the app fails on every request otherwise.
