@@ -8,27 +8,25 @@
 {
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity"
-        asp-page="Identity/Account/Manage/Index" title="Manage">
+        asp-page="/Account/Manage/Index" title="Manage">
         Hello @User.Identity.Name!</a>
     </li>
         <li class="nav-item">
-            <form class="form-inline" asp-page="Identity/Account/Logout"
+            <form class="form-inline" asp-page="/Account/Logout"
             asp-route-returnUrl="@Url.Page("/", new { area = "" })"
             asp-area="Identity" method="post" >
-                <button class="nav-link btn btn-link text-dark"
-                type="submit">Logout</button>
+                <button class="nav-link btn btn-link text-dark" type="submit">Logout</button>
             </form>
         </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity"
-            asp-page="Identity/Account/Register">Register</a>
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>
+
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity"
-            asp-page="Identity/Account/Login">Login</a>
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
     </li>
 }
 </ul>    
