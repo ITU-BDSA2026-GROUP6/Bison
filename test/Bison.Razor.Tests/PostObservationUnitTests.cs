@@ -1,33 +1,70 @@
-using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
+using System.Security.Claims;
+using Bison.Razor.Models;
+using Bison.Razor.Pages.Post;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bison.Razor.Tests;
 
-public sealed class PostObservationUnitTests : IClassFixture<WebApplicationFactory<Program>>
+public class PostObservationUnitTests
 {
-    private readonly HttpClient _client;
-
-    public PostObservationUnitTests(WebApplicationFactory<Program> factory)
+    [Fact]
+    public void OnPost_SavesObservationWithSelectedTaxonAndRedirectsToIt()
     {
-        _client = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
+        using var context = CreateContext();
+        context.Taxons.Add(new Taxon { TaxonId = 7, VernacularName = "Heron" });
+        context.SaveChanges();
+
+        var model = CreateModel(context, "Adrian");
+        model.Message = "Saw a heron";
+        model.SelectedTaxonId = 7;
+
+        var result = model.OnPost();
+
+        var redirect = Assert.IsType<RedirectResult>(result);
+        var savedObservation = Assert.Single(context.Observations);
+        Assert.Equal($"/ob/{savedObservation.PostId}", redirect.Url);
+        Assert.Equal("Saw a heron", savedObservation.Text);
+        Assert.Equal(7, savedObservation.TaxonId);
+        Assert.Equal("Adrian", context.Authors.Find(savedObservation.AuthorId)?.Name);
     }
 
     [Fact]
-    public async Task PostingObservationCreatesCheep()
+    public void OnPost_DoesNotSaveObservation_WhenSelectedTaxonDoesNotExist()
     {
-        const string observation = "A test observation";
-        using var form = new FormUrlEncodedContent(new[]
+        using var context = CreateContext();
+        var model = CreateModel(context, "Adrian");
+        model.Message = "Saw a heron";
+        model.SelectedTaxonId = 999;
+
+        var result = model.OnPost();
+
+        Assert.IsType<PageResult>(result);
+        Assert.False(model.ModelState.IsValid);
+        Assert.Empty(context.Observations);
+    }
+
+    private static BisonDbContext CreateContext()
+    {
+        var options = new DbContextOptionsBuilder<BisonDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        return new BisonDbContext(options);
+    }
+
+    private static ObserveModel CreateModel(BisonDbContext context, string author)
+    {
+        var service = new ObservationService(new DBFacade(new PostRepository(context)));
+        var model = new ObserveModel(service, context);
+        var httpContext = new DefaultHttpContext
         {
-            new KeyValuePair<string, string>("message", observation)
-        });
-
-        using var response = await _client.PostAsync("/PostObservation", form);
-
-        Assert.True(response.StatusCode == HttpStatusCode.Redirect ||
-                    response.StatusCode == HttpStatusCode.SeeOther,
-            $"Expected a redirect after posting an observation, got {(int)response.StatusCode}.");
+            User = new ClaimsPrincipal(new ClaimsIdentity(
+                [new Claim(ClaimTypes.Name, author)],
+                authenticationType: "test"))
+        };
+        model.PageContext = new PageContext { HttpContext = httpContext };
+        return model;
     }
 }
