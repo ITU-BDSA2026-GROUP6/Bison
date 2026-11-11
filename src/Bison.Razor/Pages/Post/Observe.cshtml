@@ -4,20 +4,25 @@
 @{
     Layout = "Shared/_Layout";
 }
-<div>
-   <h1>New Observation</h1>
+<div class="observationbox">
+    <h1>What have you observed?, @(User.Identity.Name)?</h1>
 
-    <form method="post" asp-page="Observe">
+    <form method="post">
         <label asp-for="Message">Message:</label>
-        <input asp-for="Message" required maxlength="128"></input>
+
+        <input asp-for="Message" type="text" required maxlength="128" />
+
+        <br />
         <label asp-for="SelectedTaxonId">Taxon:</label>
         <select asp-for="SelectedTaxonId" asp-items="Model.Taxons">
-            <option value="">-- Select a taxon --(Optional)</option>
+            <option value="">-- Select a taxon (optional) --</option>
         </select>
-        <button type="submit">Submit</button>
-        @*
+
+        <button type="submit">Share</button>
+    </form>
+
+    @*
         -- To do: Add images to observations. --
-        *@
-     </form>
+    *@
 
 </div>
