@@ -50,5 +50,5 @@ public class DBFacade
     }
 
     private static ObservationViewModel ToViewModel(Observation o) =>
-        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat));
+        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName);
 }
