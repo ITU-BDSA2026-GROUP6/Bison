@@ -35,7 +35,7 @@ jobs:
 
       - name: Publish Windows
         run: |
-          dotnet publish .src/Bison.Razor/Bison.Razor.csproj \
+          dotnet publish ./src/Bison.Razor/Bison.Razor.csproj \
             -c Release \
             -r win-x64 \
             --self-contained false \
@@ -44,7 +44,7 @@ jobs:
 
       - name: Publish Linux
         run: |
-          dotnet publish .src/Bison.Razor/Bison.Razor.csproj \
+          dotnet publish ./src/Bison.Razor/Bison.Razor.csproj \
             -c Release \
             -r linux-x64 \
             --self-contained false \
@@ -53,7 +53,7 @@ jobs:
 
       - name: Publish macOS
         run: |
-          dotnet publish .src/Bison.Razor/Bison.Razor.csproj \
+          dotnet publish ./src/Bison.Razor/Bison.Razor.csproj \
             -c Release \
             -r osx-x64 \
             --self-contained false \
