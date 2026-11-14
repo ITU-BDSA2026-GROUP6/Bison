@@ -22,13 +22,13 @@ public class PostRepository : IPostRepository
     }
 
     public List<Observation> GetObservationsByTaxon(int taxonId, int pageSize, int page)
-{
-    return FilterByTaxon(taxonId)
-        .OrderByDescending(o => o.TimeStamp)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
-        .ToList();
-}
+    {
+        return FilterByTaxon(taxonId)
+            .OrderByDescending(o => o.TimeStamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
 
     public int GetObservationCountByTaxon(int taxonId) => FilterByTaxon(taxonId).Length;
 
@@ -46,7 +46,7 @@ public class PostRepository : IPostRepository
             .ToArray();
 
         return TaxonFilter.FilterBy(root, observations);
-}
+    }
 
     private static List<Observation> Page(IQueryable<Observation> query, int pageSize, int page)
     {
@@ -67,6 +67,7 @@ public class PostRepository : IPostRepository
     {
         return _context.Observations
             .Include(o => o.Author)
+            .Include(o => o.Taxon)
             .Include(o => o.Comments).ThenInclude(c => c.Author)
             .Include(o => o.Proposals).ThenInclude(p => p.Author)
             .FirstOrDefault(o => o.PostId == id);

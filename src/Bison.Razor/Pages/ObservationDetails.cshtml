@@ -25,10 +25,16 @@ else
     <p>@Model.Observation.Message</p>
     <small>@Model.Observation.Timestamp</small>
 
-   <h2>Proposals</h2>
-    @foreach (var proposal in Model.Proposals) 
+    if (!string.IsNullOrEmpty(Model.Observation.VernacularName))
     {
-    <p>@proposal.Message — @proposal.Author</p>
+        <h2>Taxon</h2>
+        <p>@Model.Observation.VernacularName</p>
+    }
+
+    <h2>Proposals</h2>
+    @foreach (var proposal in Model.Proposals)
+    {
+        <p>@proposal.Message — @proposal.Author</p>
     }
 
     <h2>Comments</h2>

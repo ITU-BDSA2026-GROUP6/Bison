@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp);
+public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName);
 public record CommentViewModel(string Author, string Message, string Timestamp);
 public record ProposalViewModel(string Author, string Message, string Timestamp)
 {
@@ -13,15 +13,15 @@ public interface IObservationService
     public int GetObservationCount();
     public int GetObservationCountFromAuthor(string author);
 
-        ObservationViewModel? GetObservationById(int id);
-        List<CommentViewModel> GetCommentsForObservation(int observationId);
-        List<ProposalViewModel> GetProposalsForObservation(int observationId);
+    ObservationViewModel? GetObservationById(int id);
+    List<CommentViewModel> GetCommentsForObservation(int observationId);
+    List<ProposalViewModel> GetProposalsForObservation(int observationId);
     void AddObservation(string author, string message, int? taxonId = null);
 }
 
 public class ObservationService : IObservationService
 {
-    public const int PageSize = 32; 
+    public const int PageSize = 32;
     private readonly DBFacade _db;
     public ObservationService(DBFacade db)
     {
@@ -64,7 +64,7 @@ public class ObservationService : IObservationService
         return _db.GetCommentsForObservation(observationId);
     }
 
-    public List<ProposalViewModel> GetProposalsForObservation(int observationId)    
+    public List<ProposalViewModel> GetProposalsForObservation(int observationId)
     {
         return _db.GetProposalsForObservation(observationId);
     }
