@@ -1,20 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Bison.Razor.Pages;
 
 public class ObservationDetailsModel : PageModel
 {
     private readonly IObservationService _service;
+    private readonly BisonDbContext _context;
 
     public ObservationViewModel? Observation { get; private set; }
     public List<ObservationViewModel> Observations { get; private set; } = [];
     public List<CommentViewModel> Comments { get; private set; } = [];
     public List<ProposalViewModel> Proposals { get; private set; } = [];
 
-    public ObservationDetailsModel(IObservationService service)
+    public List<SelectListItem> Taxons { get; set; } = new();
+
+    [BindProperty]
+    public string CommentText { get; set; } = "";
+
+    [BindProperty]
+    public string ProposalText { get; set; } = "";
+
+    [BindProperty]
+    public int? SelectedTaxonId { get; set; }
+
+    public ObservationDetailsModel(IObservationService service, BisonDbContext context)
     {
         _service = service;
+        _context = context;
     }
 
     public IActionResult OnGet(int? id, [FromQuery] int page = 1)
@@ -32,6 +46,50 @@ public class ObservationDetailsModel : PageModel
 
         Comments = _service.GetCommentsForObservation(id.Value);
         Proposals = _service.GetProposalsForObservation(id.Value);
+        LoadTaxons();
         return Page();
+    }
+
+    public IActionResult OnPostComment(int id)
+    {
+        var author = User.Identity?.Name;
+        if (string.IsNullOrEmpty(author))
+        {
+            return RedirectToPage("/Identity/Account/Login", new { ReturnUrl = "/ob/" + id });
+        }
+
+        if (string.IsNullOrWhiteSpace(CommentText))
+        {
+            return RedirectToPage(new { id });
+        }
+
+        _service.AddComment(author, id, CommentText);
+        return RedirectToPage(new { id });
+    }
+
+    public IActionResult OnPostProposal(int id)
+    {
+        var author = User.Identity?.Name;
+        if (string.IsNullOrEmpty(author))
+        {
+            return RedirectToPage("/Identity/Account/Login", new { ReturnUrl = "/ob/" + id });
+        }
+
+        if (string.IsNullOrWhiteSpace(ProposalText) || !SelectedTaxonId.HasValue)
+        {
+            return RedirectToPage(new { id });
+        }
+
+        _service.AddProposal(author, id, SelectedTaxonId.Value, ProposalText);
+        return RedirectToPage(new { id });
+    }
+
+    private void LoadTaxons()
+    {
+        Taxons = _context.Taxons.OrderBy(t => t.VernacularName).Select(t => new SelectListItem
+        {
+            Value = t.TaxonId.ToString(),
+            Text = t.VernacularName
+        }).ToList();
     }
 }

@@ -16,4 +16,7 @@ public interface IPostRepository
     List<Proposal> GetProposalsForObservation(int observationId);
 
     void AddObservation(string authorName, string text, int? taxonId = null);
+
+    void AddComment(string authorName, int observationId, string text);
+    void AddProposal(string authorName, int observationId, int taxonId, string text);
 }
