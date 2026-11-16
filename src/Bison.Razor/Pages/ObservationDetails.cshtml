@@ -26,6 +26,11 @@ else
     <p>@Model.Observation.Message</p>
     <small>@Model.Observation.Timestamp</small>
 
+    if (Model.Observation.PictureSrc is not null)
+    {
+        <img src="@Model.Observation.PictureSrc" alt="Picture of the observed animal" style="max-width: 100%" />
+    }
+
     if (!string.IsNullOrEmpty(Model.Observation.VernacularName))
     {
         <h2>Taxon</h2>

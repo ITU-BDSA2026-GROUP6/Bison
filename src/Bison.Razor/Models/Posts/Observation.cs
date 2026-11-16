@@ -9,4 +9,6 @@ public class Observation : Post
     public ICollection<Proposal> Proposals { get; set; } = new List<Proposal>();
 
     public Taxon? getTaxon() => Taxon;
+    public int? PictureId { get; set; }
+    public Picture? Picture { get; set; }
 }

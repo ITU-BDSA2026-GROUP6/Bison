@@ -38,9 +38,9 @@ public class DBFacade
             .ToList();
     }
 
-    public void AddObservation(string author, string text, int? taxonId)
+    public void AddObservation(string author, string text, int? taxonId, Picture? picture = null)
     {
-        _repo.AddObservation(author, text, taxonId);
+        _repo.AddObservation(author, text, taxonId, picture);
     }
 
     public void AddComment(string author, int observationId, string text)
@@ -60,5 +60,7 @@ public class DBFacade
     }
 
     private static ObservationViewModel ToViewModel(Observation o) =>
-        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName);
+        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
+            // Picture is inlined as a data URI (2 MB becomes ~2.7 MB of HTML); use a file handler if lists should show pictures.
+            o.Picture is null ? null : $"data:{o.Picture.ContentType};base64,{Convert.ToBase64String(o.Picture.Data)}");
 }

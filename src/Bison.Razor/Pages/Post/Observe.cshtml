@@ -7,7 +7,9 @@
 <div class="observationbox">
     <h1>What have you observed?, @(User.Identity.Name)?</h1>
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="All"></div>
+
         <label asp-for="Message">Message:</label>
 
         <input asp-for="Message" type="text" required maxlength="128" />
@@ -18,11 +20,11 @@
             <option value="">-- Select a taxon (optional) --</option>
         </select>
 
+        <label asp-for="Upload">Picture (optional, JPEG or PNG, max 2 MB):</label>
+        <input asp-for="Upload" type="file" accept="image/jpeg,image/png" />
+
         <button type="submit">Share</button>
     </form>
 
-    @*
-        -- To do: Add images to observations. --
-    *@
 
 </div>

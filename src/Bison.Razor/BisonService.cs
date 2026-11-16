@@ -1,5 +1,6 @@
+using Bison.Razor.Models;
 using Microsoft.EntityFrameworkCore;
-public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName);
+public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName, string? PictureSrc = null);
 public record CommentViewModel(string Author, string Message, string Timestamp);
 public record ProposalViewModel(string Author, string Message, string Timestamp, string? TaxonName);
 
@@ -13,7 +14,7 @@ public interface IObservationService
     ObservationViewModel? GetObservationById(int id);
     List<CommentViewModel> GetCommentsForObservation(int observationId);
     List<ProposalViewModel> GetProposalsForObservation(int observationId);
-    void AddObservation(string author, string message, int? taxonId = null);
+    void AddObservation(string author, string message, int? taxonId = null, Picture? picture = null);
 
     void AddComment(string author, int observationId, string text);
     void AddProposal(string author, int observationId, int taxonId, string text);
@@ -49,9 +50,9 @@ public class ObservationService : IObservationService
         return _db.GetObservationCountFromAuthor(author);
     }
 
-    public void AddObservation(string author, string message, int? taxonId = null)
+    public void AddObservation(string author, string message, int? taxonId = null, Picture? picture = null)
     {
-        _db.AddObservation(author, message, taxonId);
+        _db.AddObservation(author, message, taxonId, picture);
     }
 
     public ObservationViewModel? GetObservationById(int id)
