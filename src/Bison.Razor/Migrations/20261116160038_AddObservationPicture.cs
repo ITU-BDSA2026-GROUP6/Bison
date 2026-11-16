@@ -17,7 +17,7 @@ namespace Bison.Razor.Migrations
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "Pictures",
+                name: "Picture",
                 columns: table => new
                 {
                     pictureId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -27,7 +27,7 @@ namespace Bison.Razor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Pictures", x => x.pictureId);
+                    table.PrimaryKey("PK_Picture", x => x.pictureId);
                 });
 
             migrationBuilder.CreateIndex(
@@ -36,10 +36,10 @@ namespace Bison.Razor.Migrations
                 column: "PictureId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Observations_Pictures_PictureId",
+                name: "FK_Observations_Picture_PictureId",
                 table: "Observations",
                 column: "PictureId",
-                principalTable: "Pictures",
+                principalTable: "Picture",
                 principalColumn: "pictureId");
         }
 
@@ -47,11 +47,11 @@ namespace Bison.Razor.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Observations_Pictures_PictureId",
+                name: "FK_Observations_Picture_PictureId",
                 table: "Observations");
 
             migrationBuilder.DropTable(
-                name: "Pictures");
+                name: "Picture");
 
             migrationBuilder.DropIndex(
                 name: "IX_Observations_PictureId",

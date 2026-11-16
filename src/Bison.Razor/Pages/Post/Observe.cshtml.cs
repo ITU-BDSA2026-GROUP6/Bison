@@ -1,3 +1,4 @@
+using Bison.Razor.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -26,6 +27,11 @@ public class ObserveModel : PageModel
 
 
 
+    private const long MaxPictureBytes = 2 * 1024 * 1024;
+
+    [BindProperty]
+    public IFormFile? Upload { get; set; }
+
     [BindProperty]
     public string Message { get; set; } = "";
 
@@ -47,6 +53,7 @@ public class ObserveModel : PageModel
             return RedirectToPage("/Identity/Account/Login", new { ReturnUrl = "/Observe" });
         }
 
+        var picture = ReadPicture();
         if (!ModelState.IsValid)
         {
             LoadTaxons();
@@ -60,12 +67,34 @@ public class ObserveModel : PageModel
             return Page();
         }
 
-        _service.AddObservation(Author, Message, SelectedTaxonId);
+        _service.AddObservation(Author, Message, SelectedTaxonId, picture);
 
         var observationID = _service.GetObservationsFromAuthor(Author, 1).FirstOrDefault()?.ObservationId;
 
         return Redirect("/ob/" + observationID);
     }
+    private Picture? ReadPicture()
+    {
+        if (Upload is null || Upload.Length == 0) return null;
+        if (Upload.Length > MaxPictureBytes)
+        {
+            ModelState.AddModelError(nameof(Upload), "The picture must be 2 MB or smaller.");
+            return null;
+        }
+
+        using var stream = new MemoryStream();
+        Upload.CopyTo(stream);
+        var data = stream.ToArray();
+
+        var contentType = Picture.DetectContentType(data);
+        if (contentType is null)
+        {
+            ModelState.AddModelError(nameof(Upload), "The picture must be a JPEG or PNG.");
+            return null;
+        }
+        return new Picture { Data = data, ContentType = contentType };
+    }
+
     private void LoadTaxons()
     {
         Taxons = _context.Taxons.OrderBy(t => t.VernacularName).Select(t => new SelectListItem

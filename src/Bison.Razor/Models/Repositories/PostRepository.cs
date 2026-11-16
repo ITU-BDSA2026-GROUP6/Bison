@@ -68,6 +68,7 @@ public class PostRepository : IPostRepository
         return _context.Observations
             .Include(o => o.Author)
             .Include(o => o.Taxon)
+            .Include(o => o.Picture)
             .Include(o => o.Comments).ThenInclude(c => c.Author)
             .Include(o => o.Proposals).ThenInclude(p => p.Author)
             .FirstOrDefault(o => o.PostId == id);
@@ -92,7 +93,7 @@ public class PostRepository : IPostRepository
             .ToList();
     }
 
-    public void AddObservation(string authorName, string text, int? taxonId = null)
+    public void AddObservation(string authorName, string text, int? taxonId = null, Picture? picture = null)
     {
         var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
         if (author is null)
@@ -109,7 +110,7 @@ public class PostRepository : IPostRepository
             throw new ArgumentException($"Taxon with ID {taxonId} does not exist.");
         }
 
-        _context.Observations.Add(new Observation { Author = author, Text = text, TimeStamp = DateTime.UtcNow, TaxonId = taxonId });
+        _context.Observations.Add(new Observation { Author = author, Text = text, TimeStamp = DateTime.UtcNow, TaxonId = taxonId, Picture = picture });
         _context.SaveChanges();
     }
 

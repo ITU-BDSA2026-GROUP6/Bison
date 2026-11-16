@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bison.Razor.Migrations
 {
     [DbContext(typeof(BisonDbContext))]
-    [Migration("20261109101446_AddObservationPicture")]
+    [Migration("20261116160038_AddObservationPicture")]
     partial class AddObservationPicture
     {
         /// <inheritdoc />
@@ -54,7 +54,7 @@ namespace Bison.Razor.Migrations
 
                     b.HasKey("pictureId");
 
-                    b.ToTable("Pictures");
+                    b.ToTable("Picture");
                 });
 
             modelBuilder.Entity("Bison.Razor.Models.Post", b =>

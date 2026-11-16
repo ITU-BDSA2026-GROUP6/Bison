@@ -35,6 +35,25 @@ namespace Bison.Razor.Migrations
                     b.ToTable("Authors");
                 });
 
+            modelBuilder.Entity("Bison.Razor.Models.Picture", b =>
+                {
+                    b.Property<int>("pictureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("pictureId");
+
+                    b.ToTable("Picture");
+                });
+
             modelBuilder.Entity("Bison.Razor.Models.Post", b =>
                 {
                     b.Property<int>("PostId")
@@ -295,8 +314,13 @@ namespace Bison.Razor.Migrations
                 {
                     b.HasBaseType("Bison.Razor.Models.Post");
 
+                    b.Property<int?>("PictureId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("TaxonId")
                         .HasColumnType("INTEGER");
+
+                    b.HasIndex("PictureId");
 
                     b.HasIndex("TaxonId");
 
@@ -410,6 +434,10 @@ namespace Bison.Razor.Migrations
 
             modelBuilder.Entity("Bison.Razor.Models.Observation", b =>
                 {
+                    b.HasOne("Bison.Razor.Models.Picture", "Picture")
+                        .WithMany()
+                        .HasForeignKey("PictureId");
+
                     b.HasOne("Bison.Razor.Models.Post", null)
                         .WithOne()
                         .HasForeignKey("Bison.Razor.Models.Observation", "PostId")
@@ -419,6 +447,8 @@ namespace Bison.Razor.Migrations
                     b.HasOne("Bison.Razor.Models.Taxon", "Taxon")
                         .WithMany("Observations")
                         .HasForeignKey("TaxonId");
+
+                    b.Navigation("Picture");
 
                     b.Navigation("Taxon");
                 });
