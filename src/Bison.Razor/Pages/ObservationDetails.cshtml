@@ -1,4 +1,5 @@
 @page "/ob/{id:int?}"
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model Bison.Razor.Pages.ObservationDetailsModel
 @{
     Layout = "Shared/_Layout";
@@ -34,12 +35,37 @@ else
     <h2>Proposals</h2>
     @foreach (var proposal in Model.Proposals)
     {
-        <p>@proposal.Message — @proposal.Author</p>
+        <p>@proposal.Author proposed <strong>@proposal.TaxonName</strong>: @proposal.Message</p>
+    }
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="observationbox">
+            <h3>Propose a taxon?</h3>
+            <form method="post" asp-page-handler="Proposal">
+                <input style="float: left" type="text" asp-for="ProposalText">
+                <select asp-for="SelectedTaxonId" asp-items="Model.Taxons">
+                    <option value="">-- Select a taxon --</option>
+                </select>
+                <input type="submit" value="Propose">
+            </form>
+        </div>
     }
 
     <h2>Comments</h2>
     @foreach (var comment in Model.Comments)
     {
         <p><strong>@comment.Author:</strong> @comment.Message</p>
+    }
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="observationbox">
+            <h3>Add a comment?</h3>
+            <form method="post" asp-page-handler="Comment">
+                <input style="float: left" type="text" asp-for="CommentText">
+                <input type="submit" value="Share">
+            </form>
+        </div>
     }
 }

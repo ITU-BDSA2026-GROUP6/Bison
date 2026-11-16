@@ -1,10 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName);
 public record CommentViewModel(string Author, string Message, string Timestamp);
-public record ProposalViewModel(string Author, string Message, string Timestamp)
-{
-    public object TaxonId { get; internal set; }
-}
+public record ProposalViewModel(string Author, string Message, string Timestamp, string? TaxonName);
 
 public interface IObservationService
 {
@@ -17,6 +14,9 @@ public interface IObservationService
     List<CommentViewModel> GetCommentsForObservation(int observationId);
     List<ProposalViewModel> GetProposalsForObservation(int observationId);
     void AddObservation(string author, string message, int? taxonId = null);
+
+    void AddComment(string author, int observationId, string text);
+    void AddProposal(string author, int observationId, int taxonId, string text);
 }
 
 public class ObservationService : IObservationService
@@ -67,5 +67,15 @@ public class ObservationService : IObservationService
     public List<ProposalViewModel> GetProposalsForObservation(int observationId)
     {
         return _db.GetProposalsForObservation(observationId);
+    }
+
+    public void AddComment(string author, int observationId, string text)
+    {
+        _db.AddComment(author, observationId, text);
+    }
+
+    public void AddProposal(string author, int observationId, int taxonId, string text)
+    {
+        _db.AddProposal(author, observationId, taxonId, text);
     }
 }
