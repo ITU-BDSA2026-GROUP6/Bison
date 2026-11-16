@@ -3,7 +3,7 @@ name: Release Bison
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   release:
@@ -27,12 +27,15 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
+      - name: Install Playwright browsers
+        run: pwsh test/Bison.E2ETests/bin/Release/net8.0/playwright.ps1 install --with-deps chromium
+
       - name: Test
         run: dotnet test --configuration Release --no-build
 
       - name: Publish Windows
         run: |
-          dotnet publish ./BisonProject.csproj \
+          dotnet publish ./src/Bison.Razor/Bison.Razor.csproj \
             -c Release \
             -r win-x64 \
             --self-contained false \
@@ -41,7 +44,7 @@ jobs:
 
       - name: Publish Linux
         run: |
-          dotnet publish ./BisonProject.csproj \
+          dotnet publish ./src/Bison.Razor/Bison.Razor.csproj \
             -c Release \
             -r linux-x64 \
             --self-contained false \
@@ -50,7 +53,7 @@ jobs:
 
       - name: Publish macOS
         run: |
-          dotnet publish ./BisonProject.csproj \
+          dotnet publish ./src/Bison.Razor/Bison.Razor.csproj \
             -c Release \
             -r osx-x64 \
             --self-contained false \

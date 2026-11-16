@@ -7,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 public class ObservationServiceTests
 {
     private readonly ObservationService _service;
+    private readonly BisonDbContext _context;
 
-        public ObservationServiceTests()
+    public ObservationServiceTests()
     {
         // In-memory SQLite, lives as long as the connection is open
         var connection = new SqliteConnection("Data Source=:memory:");
@@ -21,6 +22,7 @@ public class ObservationServiceTests
         var adrian = new Author { Name = "Adrian", Email = "adrian@example.com" };
         context.Observations.Add(new Observation { Author = adrian, Text = "Saw a heron", TimeStamp = DateTime.UtcNow });
         context.SaveChanges();
+        _context = context;
 
         var repo = new PostRepository(context);
         var db = new DBFacade(repo);
@@ -61,10 +63,36 @@ public class ObservationServiceTests
     }
 
     [Fact]
-        public void GetProposalsForObservation_ReturnsEmptyList_WhenObservationDoesNotExist()
-        {
+    public void GetProposalsForObservation_ReturnsEmptyList_WhenObservationDoesNotExist()
+    {
         var result = _service.GetProposalsForObservation(-1);
 
         Assert.Empty(result);
-        }
+    }
+
+    [Fact]
+    public void AddComment_ThenGetCommentsForObservation_ReturnsNewComment()
+    {
+        var observationId = _service.GetObservations(page: 1).First().ObservationId;
+
+        _service.AddComment("Adrian", observationId, "Nice spot!");
+
+        var comments = _service.GetCommentsForObservation(observationId);
+        Assert.Contains(comments, c => c.Message == "Nice spot!");
+    }
+
+    [Fact]
+    public void AddProposal_ThenGetProposalsForObservation_ReturnsNewProposal()
+    {
+        var observationId = _service.GetObservations(page: 1).First().ObservationId;
+
+        var taxon = new Taxon { dwc_TaxonID = "test-taxon", VernacularName = "Heron" };
+        _context.Taxons.Add(taxon);
+        _context.SaveChanges();
+
+        _service.AddProposal("Adrian", observationId, taxon.TaxonId, "Should be a heron");
+
+        var proposals = _service.GetProposalsForObservation(observationId);
+        Assert.Contains(proposals, p => p.Message == "Should be a heron");
+    }
 }

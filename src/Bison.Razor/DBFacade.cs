@@ -34,13 +34,23 @@ public class DBFacade
     public List<ProposalViewModel> GetProposalsForObservation(int observationId)
     {
         return _repo.GetProposalsForObservation(observationId)
-            .Select(p => new ProposalViewModel(p.Author.Name, p.Text, p.TimeStamp.ToString(DateFormat)))
+            .Select(p => new ProposalViewModel(p.Author.Name, p.Text, p.TimeStamp.ToString(DateFormat), p.Taxon.VernacularName))
             .ToList();
     }
 
     public void AddObservation(string author, string text, int? taxonId)
     {
         _repo.AddObservation(author, text, taxonId);
+    }
+
+    public void AddComment(string author, int observationId, string text)
+    {
+        _repo.AddComment(author, observationId, text);
+    }
+
+    public void AddProposal(string author, int observationId, int taxonId, string text)
+    {
+        _repo.AddProposal(author, observationId, taxonId, text);
     }
 
     public ObservationViewModel? GetObservationById(int id)
@@ -50,5 +60,5 @@ public class DBFacade
     }
 
     private static ObservationViewModel ToViewModel(Observation o) =>
-        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat));
+        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName);
 }

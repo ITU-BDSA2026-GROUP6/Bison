@@ -22,13 +22,13 @@ public class PostRepository : IPostRepository
     }
 
     public List<Observation> GetObservationsByTaxon(int taxonId, int pageSize, int page)
-{
-    return FilterByTaxon(taxonId)
-        .OrderByDescending(o => o.TimeStamp)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
-        .ToList();
-}
+    {
+        return FilterByTaxon(taxonId)
+            .OrderByDescending(o => o.TimeStamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
 
     public int GetObservationCountByTaxon(int taxonId) => FilterByTaxon(taxonId).Length;
 
@@ -46,7 +46,7 @@ public class PostRepository : IPostRepository
             .ToArray();
 
         return TaxonFilter.FilterBy(root, observations);
-}
+    }
 
     private static List<Observation> Page(IQueryable<Observation> query, int pageSize, int page)
     {
@@ -67,6 +67,7 @@ public class PostRepository : IPostRepository
     {
         return _context.Observations
             .Include(o => o.Author)
+            .Include(o => o.Taxon)
             .Include(o => o.Comments).ThenInclude(c => c.Author)
             .Include(o => o.Proposals).ThenInclude(p => p.Author)
             .FirstOrDefault(o => o.PostId == id);
@@ -86,6 +87,7 @@ public class PostRepository : IPostRepository
         return _context.Proposals
             .Where(p => p.ObservationId == observationId)
             .Include(p => p.Author)
+            .Include(p => p.Taxon)
             .OrderBy(p => p.TimeStamp)
             .ToList();
     }
@@ -110,6 +112,66 @@ public class PostRepository : IPostRepository
         _context.Observations.Add(new Observation { Author = author, Text = text, TimeStamp = DateTime.UtcNow, TaxonId = taxonId });
         _context.SaveChanges();
     }
+
+    public void AddComment(string authorName, int observationId, string text)
+    {
+        var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
+        if (author is null)
+        {
+            author = new Author { Name = authorName };
+            _context.Authors.Add(author);
+            _context.SaveChanges();
+        }
+
+        var observation = _context.Observations.Find(observationId);
+        if (observation is null)
+        {
+            throw new ArgumentException($"Observation with ID {observationId} does not exist.");
+        }
+
+        _context.Comments.Add(new Comment
+        {
+            Author = author,
+            ObservationId = observationId,
+            Text = text,
+            TimeStamp = DateTime.UtcNow
+        });
+        _context.SaveChanges();
+    }
+
+    public void AddProposal(string authorName, int observationId, int taxonId, string text)
+    {
+        var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
+        if (author is null)
+        {
+            author = new Author { Name = authorName };
+            _context.Authors.Add(author);
+            _context.SaveChanges();
+        }
+
+        var observation = _context.Observations.Find(observationId);
+        if (observation is null)
+        {
+            throw new ArgumentException($"Observation with ID {observationId} does not exist.");
+        }
+
+        var taxon = _context.Taxons.Find(taxonId);
+        if (taxon is null)
+        {
+            throw new ArgumentException($"Taxon with ID {taxonId} does not exist.");
+        }
+
+        _context.Proposals.Add(new Proposal
+        {
+            Author = author,
+            ObservationId = observationId,
+            TaxonId = taxonId,
+            Text = text,
+            TimeStamp = DateTime.UtcNow
+        });
+        _context.SaveChanges();
+    }
+
     public List<Taxon> GetAllTaxons()
     {
         return _context.Taxons.ToList();
