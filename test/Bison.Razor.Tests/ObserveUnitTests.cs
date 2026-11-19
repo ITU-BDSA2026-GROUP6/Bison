@@ -11,7 +11,7 @@ namespace Bison.Razor.Tests;
 public class ObserveUnitTests
 {
     [Fact]
-    public void OnPost_SavesObservationWithSelectedTaxonAndRedirectsToIt()
+    public void OnPost_SavesObservationWithSelectedTaxonAndRedirectsToTimeline()
     {
         using var context = CreateContext();
         context.Taxons.Add(new Taxon { TaxonId = 7, VernacularName = "Heron" });
@@ -25,7 +25,7 @@ public class ObserveUnitTests
 
         var redirect = Assert.IsType<RedirectResult>(result);
         var savedObservation = Assert.Single(context.Observations);
-        Assert.Equal($"/ob/{savedObservation.PostId}", redirect.Url);
+        Assert.Equal("/obs", redirect.Url);
         Assert.Equal("Saw a heron", savedObservation.Text);
         Assert.Equal(7, savedObservation.TaxonId);
         Assert.Equal("Adrian", context.Authors.Find(savedObservation.AuthorId)?.Name);
@@ -56,12 +56,15 @@ public class ObserveUnitTests
 
     private static ObserveModel CreateModel(BisonDbContext context, string author)
     {
+        var user = new BisonUser { Id = Guid.NewGuid().ToString(), UserName = author };
+        context.Users.Add(user);
+        context.SaveChanges();
         var service = new ObservationService(new DBFacade(new PostRepository(context)));
         var model = new ObserveModel(service, context);
         var httpContext = new DefaultHttpContext
         {
             User = new ClaimsPrincipal(new ClaimsIdentity(
-                [new Claim(ClaimTypes.Name, author)],
+                [new Claim(ClaimTypes.NameIdentifier, user.Id), new Claim(ClaimTypes.Name, author)],
                 authenticationType: "test"))
         };
         model.PageContext = new PageContext { HttpContext = httpContext };
