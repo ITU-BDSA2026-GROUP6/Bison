@@ -17,5 +17,11 @@ public class BisonDbContext : IdentityDbContext<BisonUser>
         base.OnModelCreating(modelBuilder);
         // A tabel pr class tabel
         modelBuilder.Entity<Post>().UseTptMappingStrategy();
+
+        modelBuilder.Entity<Author>()
+            .HasOne(a => a.BisonUser)
+            .WithOne()
+            .HasForeignKey<Author>(a => a.BisonUserId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

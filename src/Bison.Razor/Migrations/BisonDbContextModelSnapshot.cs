@@ -22,6 +22,9 @@ namespace Bison.Razor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("BisonUserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -31,6 +34,9 @@ namespace Bison.Razor.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("AuthorId");
+
+                    b.HasIndex("BisonUserId")
+                        .IsUnique();
 
                     b.ToTable("Authors");
                 });
@@ -342,6 +348,16 @@ namespace Bison.Razor.Migrations
                     b.HasIndex("TaxonId");
 
                     b.ToTable("Proposals");
+                });
+
+            modelBuilder.Entity("Bison.Razor.Models.Author", b =>
+                {
+                    b.HasOne("BisonUser", "BisonUser")
+                        .WithOne()
+                        .HasForeignKey("Bison.Razor.Models.Author", "BisonUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("BisonUser");
                 });
 
             modelBuilder.Entity("Bison.Razor.Models.Post", b =>

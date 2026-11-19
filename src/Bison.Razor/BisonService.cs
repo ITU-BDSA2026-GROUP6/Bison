@@ -14,10 +14,10 @@ public interface IObservationService
     ObservationViewModel? GetObservationById(int id);
     List<CommentViewModel> GetCommentsForObservation(int observationId);
     List<ProposalViewModel> GetProposalsForObservation(int observationId);
-    void AddObservation(string author, string message, int? taxonId = null, Picture? picture = null);
+    void AddObservation(string userId, string message, int? taxonId = null, Picture? picture = null);
 
-    void AddComment(string author, int observationId, string text);
-    void AddProposal(string author, int observationId, int taxonId, string text);
+    void AddComment(string userId, int observationId, string text);
+    void AddProposal(string userId, int observationId, int taxonId, string text);
 }
 
 public class ObservationService : IObservationService

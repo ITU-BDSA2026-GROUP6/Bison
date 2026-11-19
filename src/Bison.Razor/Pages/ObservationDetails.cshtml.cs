@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace Bison.Razor.Pages;
 
@@ -52,10 +53,12 @@ public class ObservationDetailsModel : PageModel
 
     public IActionResult OnPostComment(int id)
     {
-        var author = User.Identity?.Name;
-        if (string.IsNullOrEmpty(author))
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (User.Identity?.IsAuthenticated != true ||
+            string.IsNullOrEmpty(userId))
         {
-            return RedirectToPage("/Identity/Account/Login", new { ReturnUrl = "/ob/" + id });
+            return Challenge();
         }
 
         if (string.IsNullOrWhiteSpace(CommentText))
@@ -63,24 +66,27 @@ public class ObservationDetailsModel : PageModel
             return RedirectToPage(new { id });
         }
 
-        _service.AddComment(author, id, CommentText);
+        _service.AddComment(userId, id, CommentText);
         return RedirectToPage(new { id });
     }
 
     public IActionResult OnPostProposal(int id)
     {
-        var author = User.Identity?.Name;
-        if (string.IsNullOrEmpty(author))
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (User.Identity?.IsAuthenticated != true ||
+            string.IsNullOrEmpty(userId))
         {
-            return RedirectToPage("/Identity/Account/Login", new { ReturnUrl = "/ob/" + id });
+            return Challenge();
         }
 
-        if (string.IsNullOrWhiteSpace(ProposalText) || !SelectedTaxonId.HasValue)
+        if (string.IsNullOrWhiteSpace(ProposalText) ||
+            !SelectedTaxonId.HasValue)
         {
             return RedirectToPage(new { id });
         }
 
-        _service.AddProposal(author, id, SelectedTaxonId.Value, ProposalText);
+        _service.AddProposal(userId, id, SelectedTaxonId.Value, ProposalText);
         return RedirectToPage(new { id });
     }
 
