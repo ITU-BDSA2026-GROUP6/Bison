@@ -16,6 +16,33 @@ public class PostRepository : IPostRepository
         return Page(_context.Observations, pageSize, page);
     }
 
+    private Author GetOrCreateAuthor(string userId)
+    {
+        var user = _context.Users.SingleOrDefault(u => u.Id == userId)
+         ?? throw new InvalidOperationException("Account not found.");
+
+        if (string.IsNullOrWhiteSpace(user.UserName))
+        {
+            throw new InvalidOperationException("Account has no username.");
+        }
+
+        var author = _context.Authors
+            .SingleOrDefault(a => a.BisonUserId == userId);
+
+        if (author == null)
+        {
+            author = new Author
+            {
+                BisonUserId = user.Id,
+                Name = user.UserName
+            };
+
+        _context.Authors.Add(author);
+        }
+
+        return author;
+    }
+
     public List<Observation> GetObservationsByAuthor(string authorName, int pageSize, int page)
     {
         return Page(_context.Observations.Where(o => o.Author.Name == authorName), pageSize, page);
@@ -93,16 +120,9 @@ public class PostRepository : IPostRepository
             .ToList();
     }
 
-    public void AddObservation(string authorName, string text, int? taxonId = null, Picture? picture = null)
+    public void AddObservation(string userId, string text, int? taxonId = null, Picture? picture = null)
     {
-        var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
-        if (author is null)
-        {
-            // If the author doesn't exist, create a new one
-            author = new Author { Name = authorName };
-            _context.Authors.Add(author);
-            _context.SaveChanges();
-        } // samme adfærd som før
+        var author = GetOrCreateAuthor(userId);
 
         var taxon = _context.Taxons.Find(taxonId);
         if (taxon is null && taxonId.HasValue)
@@ -114,15 +134,9 @@ public class PostRepository : IPostRepository
         _context.SaveChanges();
     }
 
-    public void AddComment(string authorName, int observationId, string text)
+    public void AddComment(string userId, int observationId, string text)
     {
-        var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
-        if (author is null)
-        {
-            author = new Author { Name = authorName };
-            _context.Authors.Add(author);
-            _context.SaveChanges();
-        }
+        var author = GetOrCreateAuthor(userId);
 
         var observation = _context.Observations.Find(observationId);
         if (observation is null)
@@ -140,15 +154,9 @@ public class PostRepository : IPostRepository
         _context.SaveChanges();
     }
 
-    public void AddProposal(string authorName, int observationId, int taxonId, string text)
+    public void AddProposal(string userId, int observationId, int taxonId, string text)
     {
-        var author = _context.Authors.FirstOrDefault(a => a.Name == authorName);
-        if (author is null)
-        {
-            author = new Author { Name = authorName };
-            _context.Authors.Add(author);
-            _context.SaveChanges();
-        }
+        var author = GetOrCreateAuthor(userId);
 
         var observation = _context.Observations.Find(observationId);
         if (observation is null)

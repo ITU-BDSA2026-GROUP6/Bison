@@ -17,6 +17,7 @@ builder.Services.AddScoped<IObservationService, ObservationService>();
 //Password requirements
 builder.Services.AddDefaultIdentity<BisonUser>(options =>
 {
+    options.User.RequireUniqueEmail = true;
     options.SignIn.RequireConfirmedAccount = true;
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
