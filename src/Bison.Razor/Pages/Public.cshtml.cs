@@ -15,7 +15,7 @@ public class PublicModel : PageModel
     public int TotalPages { get; private set; }
     public List<SelectListItem> Taxons { get; set; } = new();
 
-    [BindProperty]
+    [BindProperty(SupportsGet =true)]
     public int? SelectedTaxonId { get; set; }
 
     public PublicModel(IObservationService service)
@@ -24,14 +24,23 @@ public class PublicModel : PageModel
     }
     public IActionResult OnGet([FromQuery] int page = 1)
     {
+        CurrentPage = Math.Max(page, 1);
+
+        var count = SelectedTaxonId.HasValue  
+            ?   _service.GetObservationCountByTaxon(SelectedTaxonId.Value)
+            :   _service.GetObservationCount();
+
+        TotalPages = Math.Max(1, (int)Math.Ceiling(
+            count / (double)ObservationService.PageSize));
+
+        CurrentPage = Math.Min(CurrentPage, TotalPages);
+
+        Observations = SelectedTaxonId.HasValue
+            ?   _service.GetObservationsByTaxon(SelectedTaxonId.Value,CurrentPage)
+            :   _service.GetObservations(CurrentPage);
+        
         LoadTaxons();
 
-        CurrentPage = Math.Max(page, 1);
-        TotalPages = Math.Max(1, (int)Math.Ceiling(
-            _service.GetObservationCount() / (double)ObservationService.PageSize));
-        CurrentPage = Math.Min(CurrentPage, TotalPages);
-        Observations = _service.GetObservations(CurrentPage);
-        
         return Page();
     }
 

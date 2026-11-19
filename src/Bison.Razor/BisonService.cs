@@ -20,6 +20,10 @@ public interface IObservationService
     void AddProposal(string author, int observationId, int taxonId, string text);
 
     public List<Taxon> GetTaxons();
+
+    public int GetObservationCountByTaxon(int taxonID);
+
+    public List<ObservationViewModel> GetObservationsByTaxon(int taxonID, int currentpage);
 }
 
 public class ObservationService : IObservationService
@@ -84,5 +88,15 @@ public class ObservationService : IObservationService
     public List<Taxon> GetTaxons()
     {
         return _db.GetTaxons();
+    }
+
+    public List<ObservationViewModel> GetObservationsByTaxon(int taxonID, int currentpage)
+    {
+        return _db.GetObservationsByTaxon(taxonID,PageSize,currentpage);
+    }
+
+    public int GetObservationCountByTaxon(int taxonID)
+    {
+        return _db.GetObservationCountByTaxon(taxonID);
     }
 }
