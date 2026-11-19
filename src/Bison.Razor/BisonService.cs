@@ -18,6 +18,8 @@ public interface IObservationService
 
     void AddComment(string author, int observationId, string text);
     void AddProposal(string author, int observationId, int taxonId, string text);
+
+    public List<Taxon> GetTaxons();
 }
 
 public class ObservationService : IObservationService
@@ -78,5 +80,9 @@ public class ObservationService : IObservationService
     public void AddProposal(string author, int observationId, int taxonId, string text)
     {
         _db.AddProposal(author, observationId, taxonId, text);
+    }
+    public List<Taxon> GetTaxons()
+    {
+        return _db.GetTaxons();
     }
 }

@@ -59,6 +59,11 @@ public class DBFacade
         return o is null ? null : ToViewModel(o);
     }
 
+    public List<Taxon> GetTaxons()
+    {
+        return _repo.GetTaxons();
+    }
+
     private static ObservationViewModel ToViewModel(Observation o) =>
         new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
             // Picture is inlined as a data URI (2 MB becomes ~2.7 MB of HTML); use a file handler if lists should show pictures.

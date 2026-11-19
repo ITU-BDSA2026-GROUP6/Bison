@@ -13,19 +13,11 @@ namespace Bison.Razor.Pages.Post;
 public class ObserveModel : PageModel
 {
     private readonly IObservationService _service;
-    private readonly BisonDbContext _context;
 
-    public ObserveModel(IObservationService service, BisonDbContext context)
+    public ObserveModel(IObservationService service)
     {
         _service = service;
-        _context = context;
     }
-
-
-
-
-
-
 
     private const long MaxPictureBytes = 2 * 1024 * 1024;
 
@@ -60,7 +52,7 @@ public class ObserveModel : PageModel
             return Page();
         }
 
-        if (SelectedTaxonId.HasValue && !_context.Taxons.Any(t => t.TaxonId == SelectedTaxonId.Value))
+        if (SelectedTaxonId.HasValue && !_service.GetTaxons().Any(t => t.TaxonId == SelectedTaxonId.Value))
         {
             ModelState.AddModelError("SelectedTaxonId", "Please select a valid taxon.");
             LoadTaxons();
@@ -97,10 +89,12 @@ public class ObserveModel : PageModel
 
     private void LoadTaxons()
     {
-        Taxons = _context.Taxons.OrderBy(t => t.VernacularName).Select(t => new SelectListItem
-        {
-            Value = t.TaxonId.ToString(),
-            Text = t.VernacularName
-        }).ToList();
+        Taxons = _service.GetTaxons()
+            .OrderBy(t => t.VernacularName)
+            .Select(t => new SelectListItem
+            {   
+                Value = t.TaxonId.ToString(),   
+                Text = t.VernacularName
+            }).ToList();
     }
 }
