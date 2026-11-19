@@ -1,5 +1,5 @@
-﻿@page "/obs"
-@using Microsoft.EntityFrameworkCore
+@page "/obs"
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model Bison.Razor.Pages.PublicModel
 @{
     ViewData["Title"] = "Bison";
@@ -8,6 +8,10 @@
 
 <div>
     <h2> Public Timeline </h2>
+
+        <select asp-items="Model.Taxons">
+        <option value="">-- Filter by taxon --</option>
+        </select>
 
     @if (Model.Observations.Any())
     {

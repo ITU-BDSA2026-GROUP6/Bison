@@ -53,7 +53,7 @@ public class ObserveModel : PageModel
         }
 
         if (SelectedTaxonId.HasValue && !_service.GetTaxons().Any(t => t.TaxonId == SelectedTaxonId.Value))
-        {
+        { 
             ModelState.AddModelError("SelectedTaxonId", "Please select a valid taxon.");
             LoadTaxons();
             return Page();
