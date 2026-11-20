@@ -40,11 +40,11 @@
         <em>There are no observations so far.</em>
     }
 
-    @{
+        @{
         var pages = new SortedSet<int> { 1, Model.TotalPages };
         for (var pageNumber = Math.Max(1, Model.CurrentPage - 1);
-             pageNumber <= Math.Min(Model.TotalPages, Model.CurrentPage + 1);
-             pageNumber++)
+            pageNumber <= Math.Min(Model.TotalPages, Model.CurrentPage + 1);
+            pageNumber++)
         {
             pages.Add(pageNumber);
         }
@@ -56,11 +56,9 @@
         @if (Model.CurrentPage > 1)
         {
             <a class="pagination-item pagination-arrow"
-                asp-page="/Public"
-                asp-route-page="@(Model.CurrentPage - 1)"
-                asp-route-SelectedTaxonId="@Model.SelectedTaxonId"
-                aria-label="Previous page">&lsaquo;</a>        
-                }
+            href="/obs?page=@(Model.CurrentPage - 1)&SelectedTaxonId=@Model.SelectedTaxonId"
+            aria-label="Previous page">&lsaquo;</a>
+        }
         else
         {
             <span class="pagination-item pagination-arrow disabled" aria-hidden="true">&lsaquo;</span>
@@ -80,9 +78,7 @@
             else
             {
                 <a class="pagination-item"
-                asp-page="/Public"
-                asp-route-page="@pageNumber"
-                asp-route-SelectedTaxonId="@Model.SelectedTaxonId">@pageNumber</a>
+                href="/obs?page=@pageNumber&SelectedTaxonId=@Model.SelectedTaxonId">@pageNumber</a>
             }
 
             previousPageNumber = pageNumber;
@@ -91,9 +87,7 @@
         @if (Model.CurrentPage < Model.TotalPages)
         {
             <a class="pagination-item pagination-arrow"
-            asp-page="/Public"
-            asp-route-page="@(Model.CurrentPage + 1)"
-            asp-route-SelectedTaxonId="@Model.SelectedTaxonId"
+            href="/obs?page=@(Model.CurrentPage + 1)&SelectedTaxonId=@Model.SelectedTaxonId"
             aria-label="Next page">&rsaquo;</a>
         }
         else
