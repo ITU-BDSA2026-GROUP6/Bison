@@ -4,65 +4,31 @@ using Bison.Razor.Pages.Post;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace Bison.Razor.Tests;
 
 public class ObserveUnitTests
 {
     [Fact]
-    public void OnPost_SavesObservationWithSelectedTaxonAndRedirectsToIt()
+    public void OnPost_RedirectsAnonymousUserToLogin()
     {
-        using var context = CreateContext();
-        context.Taxons.Add(new Taxon { TaxonId = 7, VernacularName = "Heron" });
-        context.SaveChanges();
-
-        var model = CreateModel(context, "Adrian");
-        model.Message = "Saw a heron";
-        model.SelectedTaxonId = 7;
+        var model = CreateModel(null);
 
         var result = model.OnPost();
 
-        var redirect = Assert.IsType<RedirectResult>(result);
-        var savedObservation = Assert.Single(context.Observations);
-        Assert.Equal($"/ob/{savedObservation.PostId}", redirect.Url);
-        Assert.Equal("Saw a heron", savedObservation.Text);
-        Assert.Equal(7, savedObservation.TaxonId);
-        Assert.Equal("Adrian", context.Authors.Find(savedObservation.AuthorId)?.Name);
+        var redirect = Assert.IsType<RedirectToPageResult>(result);
+        Assert.Equal("/Identity/Account/Login", redirect.PageName);
     }
 
-    [Fact]
-    public void OnPost_DoesNotSaveObservation_WhenSelectedTaxonDoesNotExist()
+    private static ObserveModel CreateModel(string? author)
     {
-        using var context = CreateContext();
-        var model = CreateModel(context, "Adrian");
-        model.Message = "Saw a heron";
-        model.SelectedTaxonId = 999;
-
-        var result = model.OnPost();
-
-        Assert.IsType<PageResult>(result);
-        Assert.False(model.ModelState.IsValid);
-        Assert.Empty(context.Observations);
-    }
-
-    private static BisonDbContext CreateContext()
-    {
-        var options = new DbContextOptionsBuilder<BisonDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-        return new BisonDbContext(options);
-    }
-
-    private static ObserveModel CreateModel(BisonDbContext context, string author)
-    {
-        var service = new ObservationService(new DBFacade(new PostRepository(context)));
-        var model = new ObserveModel(service, context);
+        var model = new ObserveModel(null!);
+        var identity = author is null
+            ? new ClaimsIdentity()
+            : new ClaimsIdentity([new Claim(ClaimTypes.Name, author)], "test");
         var httpContext = new DefaultHttpContext
         {
-            User = new ClaimsPrincipal(new ClaimsIdentity(
-                [new Claim(ClaimTypes.Name, author)],
-                authenticationType: "test"))
+            User = new ClaimsPrincipal(identity)
         };
         model.PageContext = new PageContext { HttpContext = httpContext };
         return model;

@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
+using Bison.Razor.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Bison.Razor.Pages;
 
@@ -9,6 +13,11 @@ public class PublicModel : PageModel
     public List<ObservationViewModel> Observations { get; set; } = [];
     public int CurrentPage { get; private set; }
     public int TotalPages { get; private set; }
+    public List<SelectListItem> Taxons { get; set; } = new();
+
+    [BindProperty(SupportsGet =true)]
+    public int? SelectedTaxonId { get; set; }
+
     public PublicModel(IObservationService service)
     {
         _service = service;
@@ -16,10 +25,33 @@ public class PublicModel : PageModel
     public IActionResult OnGet([FromQuery] int page = 1)
     {
         CurrentPage = Math.Max(page, 1);
+
+        var count = SelectedTaxonId.HasValue  
+            ?   _service.GetObservationCountByTaxon(SelectedTaxonId.Value)
+            :   _service.GetObservationCount();
+
         TotalPages = Math.Max(1, (int)Math.Ceiling(
-            _service.GetObservationCount() / (double)ObservationService.PageSize));
+            count / (double)ObservationService.PageSize));
+
         CurrentPage = Math.Min(CurrentPage, TotalPages);
-        Observations = _service.GetObservations(CurrentPage);
+
+        Observations = SelectedTaxonId.HasValue
+            ?   _service.GetObservationsByTaxon(SelectedTaxonId.Value,CurrentPage)
+            :   _service.GetObservations(CurrentPage);
+        
+        LoadTaxons();
+
         return Page();
+    }
+
+    private void LoadTaxons()
+    {
+        Taxons = _service.GetTaxons()
+            .OrderBy(t => t.VernacularName)
+            .Select(t => new SelectListItem
+            {   
+                Value = t.TaxonId.ToString(),   
+                Text = t.VernacularName
+            }).ToList();
     }
 }
