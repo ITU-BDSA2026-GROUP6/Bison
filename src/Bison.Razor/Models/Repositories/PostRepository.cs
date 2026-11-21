@@ -181,7 +181,7 @@ public class PostRepository : IPostRepository
         _context.SaveChanges();
     }
 
-    public List<Taxon> GetAllTaxons()
+    public List<Taxon> GetTaxons()
     {
         return _context.Taxons.ToList();
     }

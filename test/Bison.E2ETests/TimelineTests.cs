@@ -36,10 +36,10 @@ public class TimelineTests : PageTest, IClassFixture<AppFixture>
         await Page.GotoAsync($"{BaseUrl}/obs");
 
         await Page.GetByRole(AriaRole.Link, new() { Name = "Next" }).ClickAsync();
-        await Expect(Page).ToHaveURLAsync(new Regex(@"page=2$"));
+        await Expect(Page).ToHaveURLAsync(new Regex(@"[?&]page=2(?:&|$)"));
 
         await Page.GetByRole(AriaRole.Link, new() { Name = "Previous" }).ClickAsync();
-        await Expect(Page).ToHaveURLAsync(new Regex(@"page=1$"));
+        await Expect(Page).ToHaveURLAsync(new Regex(@"[?&]page=1(?:&|$)"));
     }
 
     [Fact]

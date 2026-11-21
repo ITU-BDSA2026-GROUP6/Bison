@@ -8,7 +8,6 @@ namespace Bison.Razor.Pages;
 public class ObservationDetailsModel : PageModel
 {
     private readonly IObservationService _service;
-    private readonly BisonDbContext _context;
 
     public ObservationViewModel? Observation { get; private set; }
     public List<ObservationViewModel> Observations { get; private set; } = [];
@@ -26,10 +25,9 @@ public class ObservationDetailsModel : PageModel
     [BindProperty]
     public int? SelectedTaxonId { get; set; }
 
-    public ObservationDetailsModel(IObservationService service, BisonDbContext context)
+    public ObservationDetailsModel(IObservationService service)
     {
         _service = service;
-        _context = context;
     }
 
     public IActionResult OnGet(int? id, [FromQuery] int page = 1)
@@ -92,10 +90,12 @@ public class ObservationDetailsModel : PageModel
 
     private void LoadTaxons()
     {
-        Taxons = _context.Taxons.OrderBy(t => t.VernacularName).Select(t => new SelectListItem
-        {
-            Value = t.TaxonId.ToString(),
-            Text = t.VernacularName
-        }).ToList();
+        Taxons = _service.GetTaxons()
+            .OrderBy(t => t.VernacularName)
+            .Select(t => new SelectListItem
+            {   
+                Value = t.TaxonId.ToString(),   
+                Text = t.VernacularName
+            }).ToList();
     }
 }
