@@ -15,14 +15,17 @@ public sealed class ObserveIntegrationTests
 
         context.Database.EnsureCreated();
         context.Taxons.Add(new Taxon { TaxonId = 7, VernacularName = "Heron" });
+        var user = new BisonUser { UserName = "Adrian" };
+        context.Users.Add(user);
         context.SaveChanges();
 
         var service = new ObservationService(new DBFacade(new PostRepository(context)));
-        service.AddObservation("Adrian", "Saw a heron", 7);
+        service.AddObservation(user.Id, "Saw a heron", 7);
 
         var savedObservation = Assert.Single(context.Observations);
         Assert.Equal("Saw a heron", savedObservation.Text);
         Assert.Equal(7, savedObservation.TaxonId);
+        Assert.Equal(user.Id, savedObservation.Author.BisonUserId);
     }
 
     [Fact]

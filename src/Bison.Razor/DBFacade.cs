@@ -38,19 +38,19 @@ public class DBFacade
             .ToList();
     }
 
-    public void AddObservation(string author, string text, int? taxonId, Picture? picture = null)
+    public void AddObservation(string userId, string text, int? taxonId, Picture? picture = null)
     {
-        _repo.AddObservation(author, text, taxonId, picture);
+        _repo.AddObservation(userId, text, taxonId, picture);
     }
 
-    public void AddComment(string author, int observationId, string text)
+    public void AddComment(string userId, int observationId, string text)
     {
-        _repo.AddComment(author, observationId, text);
+        _repo.AddComment(userId, observationId, text);
     }
 
-    public void AddProposal(string author, int observationId, int taxonId, string text)
+    public void AddProposal(string userId, int observationId, int taxonId, string text)
     {
-        _repo.AddProposal(author, observationId, taxonId, text);
+        _repo.AddProposal(userId, observationId, taxonId, text);
     }
 
     public ObservationViewModel? GetObservationById(int id)

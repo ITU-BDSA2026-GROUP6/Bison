@@ -1,0 +1,27 @@
+@page "/Account/Username"
+@model Bison.Razor.Pages.Account.UsernameModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Change username";
+}
+
+<h2>Change username</h2>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <p role="status">@Model.StatusMessage</p>
+}
+
+<form method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div>
+        <label asp-for="Username">Username</label>
+        <input asp-for="Username" autocomplete="username" />
+        <span asp-validation-for="Username"></span>
+    </div>
+
+    <button type="submit">Save username</button>
+</form>

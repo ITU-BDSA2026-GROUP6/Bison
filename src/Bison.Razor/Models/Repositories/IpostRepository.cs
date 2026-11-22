@@ -15,10 +15,10 @@ public interface IPostRepository
     List<Comment> GetCommentsForObservation(int observationId);
     List<Proposal> GetProposalsForObservation(int observationId);
 
-    void AddObservation(string authorName, string text, int? taxonId = null, Picture? picture = null);
+    void AddObservation(string userId, string text, int? taxonId = null, Picture? picture = null);
 
-    void AddComment(string authorName, int observationId, string text);
-    void AddProposal(string authorName, int observationId, int taxonId, string text);
+    void AddComment(string userId, int observationId, string text);
+    void AddProposal(string userId, int observationId, int taxonId, string text);
 
     List<Taxon> GetTaxons();
 }

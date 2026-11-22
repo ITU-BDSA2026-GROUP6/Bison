@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace Bison.Razor.Pages.Post;
 
@@ -39,32 +40,34 @@ public class ObserveModel : PageModel
     }
     public IActionResult OnPost()
     {
-        var Author = User.Identity?.Name;
-        if (string.IsNullOrEmpty(Author))
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
         {
-            return RedirectToPage("/Identity/Account/Login", new { ReturnUrl = "/Observe" });
+            return Challenge();
         }
 
         var picture = ReadPicture();
+
         if (!ModelState.IsValid)
         {
             LoadTaxons();
             return Page();
         }
 
-        if (SelectedTaxonId.HasValue && !_service.GetTaxons().Any(t => t.TaxonId == SelectedTaxonId.Value))
-        { 
-            ModelState.AddModelError("SelectedTaxonId", "Please select a valid taxon.");
+        if (SelectedTaxonId.HasValue &&
+            !_service.GetTaxons().Any(t => t.TaxonId == SelectedTaxonId.Value))
+        {
+            ModelState.AddModelError(
+                "SelectedTaxonId", "Please select a valid taxon.");
             LoadTaxons();
             return Page();
         }
 
-        _service.AddObservation(Author, Message, SelectedTaxonId, picture);
+        _service.AddObservation(userId, Message, SelectedTaxonId, picture);
 
-        var observationID = _service.GetObservationsFromAuthor(Author, 1).FirstOrDefault()?.ObservationId;
-
-        return Redirect("/ob/" + observationID);
-    }
+        return Redirect("/obs");
+    }    
     private Picture? ReadPicture()
     {
         if (Upload is null || Upload.Length == 0) return null;
@@ -92,8 +95,8 @@ public class ObserveModel : PageModel
         Taxons = _service.GetTaxons()
             .OrderBy(t => t.VernacularName)
             .Select(t => new SelectListItem
-            {   
-                Value = t.TaxonId.ToString(),   
+            {
+                Value = t.TaxonId.ToString(),
                 Text = t.VernacularName
             }).ToList();
     }

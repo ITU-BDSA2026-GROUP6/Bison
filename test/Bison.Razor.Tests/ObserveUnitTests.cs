@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using Bison.Razor.Models;
 using Bison.Razor.Pages.Post;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,27 +8,13 @@ namespace Bison.Razor.Tests;
 public class ObserveUnitTests
 {
     [Fact]
-    public void OnPost_RedirectsAnonymousUserToLogin()
+    public void OnPost_ChallengesAnonymousUser()
     {
-        var model = CreateModel(null);
-
-        var result = model.OnPost();
-
-        var redirect = Assert.IsType<RedirectToPageResult>(result);
-        Assert.Equal("/Identity/Account/Login", redirect.PageName);
-    }
-
-    private static ObserveModel CreateModel(string? author)
-    {
-        var model = new ObserveModel(null!);
-        var identity = author is null
-            ? new ClaimsIdentity()
-            : new ClaimsIdentity([new Claim(ClaimTypes.Name, author)], "test");
-        var httpContext = new DefaultHttpContext
+        var model = new ObserveModel(null!)
         {
-            User = new ClaimsPrincipal(identity)
+            PageContext = new PageContext { HttpContext = new DefaultHttpContext() }
         };
-        model.PageContext = new PageContext { HttpContext = httpContext };
-        return model;
+
+        Assert.IsType<ChallengeResult>(model.OnPost());
     }
 }
