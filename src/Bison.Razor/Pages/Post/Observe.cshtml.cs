@@ -1,4 +1,4 @@
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

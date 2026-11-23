@@ -1,6 +1,6 @@
 namespace Bison.Razor.Tests;
 
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,8 +34,7 @@ public class ObservationServiceTests
         _context = context;
 
         var repo = new PostRepository(context);
-        var db = new DBFacade(repo);
-        _service = new ObservationService(db);
+        _service = new ObservationService(repo);
     }
 
     [Fact]

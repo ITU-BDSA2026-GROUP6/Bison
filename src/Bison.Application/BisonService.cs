@@ -1,101 +1,101 @@
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName, string? PictureSrc = null);
 public record CommentViewModel(string Author, string Message, string Timestamp);
 public record ProposalViewModel(string Author, string Message, string Timestamp, string? TaxonName);
 
-public interface IObservationService
-{
-    public List<ObservationViewModel> GetObservations(int page);
-    public List<ObservationViewModel> GetObservationsFromAuthor(string author, int page);
-    public int GetObservationCount();
-    public int GetObservationCountFromAuthor(string author);
-
-    ObservationViewModel? GetObservationById(int id);
-    List<CommentViewModel> GetCommentsForObservation(int observationId);
-    List<ProposalViewModel> GetProposalsForObservation(int observationId);
-    void AddObservation(string userId, string message, int? taxonId = null, Picture? picture = null);
-
-    void AddComment(string userId, int observationId, string text);
-    void AddProposal(string userId, int observationId, int taxonId, string text);
-
-    public List<Taxon> GetTaxons();
-
-    public int GetObservationCountByTaxon(int taxonID);
-
-    public List<ObservationViewModel> GetObservationsByTaxon(int taxonID, int currentpage);
-}
 
 public class ObservationService : IObservationService
 {
-    public const int PageSize = 32;
-    private readonly DBFacade _db;
-    public ObservationService(DBFacade db)
+    private const string DateFormat = "MM/dd/yy H:mm:ss";
+    public const int stdPageSize = 32;
+    private readonly IPostRepository _repo;
+
+    public ObservationService(IPostRepository repo)
     {
-        _db = db;
+        _repo = repo;
     }
 
     public List<ObservationViewModel> GetObservations(int page)
     {
-        return _db.GetObservations(PageSize, page);
+        return GetObservations(stdPageSize, page);
     }
+    public List<ObservationViewModel> GetObservations(int pageSize, int page = 1)
+    {
+        return _repo.GetObservations(pageSize, page).Select(ToViewModel).ToList();
+    }
+
 
     public List<ObservationViewModel> GetObservationsFromAuthor(string author, int page)
     {
-        // filter by the provided author name
-        return _db.GetObservationsFromAuthor(author, PageSize, page);
+        return GetObservationsFromAuthor(author,stdPageSize,page);
+    }
+    public List<ObservationViewModel> GetObservationsFromAuthor(string author, int pageSize, int page = 1)
+    {
+        return _repo.GetObservationsByAuthor(author, pageSize, page).Select(ToViewModel).ToList();
     }
 
-    public int GetObservationCount()
-    {
-        return _db.GetObservationCount();
-    }
+    public int GetObservationCount() => _repo.GetObservationCount();
 
-    public int GetObservationCountFromAuthor(string author)
-    {
-        return _db.GetObservationCountFromAuthor(author);
-    }
-
-    public void AddObservation(string author, string message, int? taxonId = null, Picture? picture = null)
-    {
-        _db.AddObservation(author, message, taxonId, picture);
-    }
-
-    public ObservationViewModel? GetObservationById(int id)
-    {
-        return _db.GetObservationById(id);
-    }
+    public int GetObservationCountFromAuthor(string author) => _repo.GetObservationCountByAuthor(author);
 
     public List<CommentViewModel> GetCommentsForObservation(int observationId)
     {
-        return _db.GetCommentsForObservation(observationId);
+        return _repo.GetCommentsForObservation(observationId)
+            .Select(c => new CommentViewModel(c.Author.Name, c.Text, c.TimeStamp.ToString(DateFormat)))
+            .ToList();
     }
 
     public List<ProposalViewModel> GetProposalsForObservation(int observationId)
     {
-        return _db.GetProposalsForObservation(observationId);
+        return _repo.GetProposalsForObservation(observationId)
+            .Select(p => new ProposalViewModel(p.Author.Name, p.Text, p.TimeStamp.ToString(DateFormat), p.Taxon.VernacularName))
+            .ToList();
     }
 
-    public void AddComment(string author, int observationId, string text)
+    public void AddObservation(string userId, string text, int? taxonId, Picture? picture = null)
     {
-        _db.AddComment(author, observationId, text);
+        _repo.AddObservation(userId, text, taxonId, picture);
     }
 
-    public void AddProposal(string author, int observationId, int taxonId, string text)
+    public void AddComment(string userId, int observationId, string text)
     {
-        _db.AddProposal(author, observationId, taxonId, text);
+        _repo.AddComment(userId, observationId, text);
     }
+
+    public void AddProposal(string userId, int observationId, int taxonId, string text)
+    {
+        _repo.AddProposal(userId, observationId, taxonId, text);
+    }
+
+    public ObservationViewModel? GetObservationById(int id)
+    {
+        var o = _repo.GetObservationById(id);
+        return o is null ? null : ToViewModel(o);
+    }
+
     public List<Taxon> GetTaxons()
     {
-        return _db.GetTaxons();
+        return _repo.GetTaxons();
     }
+
+
+    public List<ObservationViewModel> GetObservationsByTaxon(int taxonId, int pageSize, int page = 1)
+    {
+        return _repo.GetObservationsByTaxon(taxonId, pageSize, page).Select(ToViewModel).ToList();   
+    }
+
 
     public List<ObservationViewModel> GetObservationsByTaxon(int taxonID, int currentpage)
     {
-        return _db.GetObservationsByTaxon(taxonID,PageSize,currentpage);
+        return GetObservationsByTaxon(taxonID,stdPageSize,currentpage);
+    }
+    public int GetObservationCountByTaxon(int taxonId)
+    {
+        return _repo.GetObservationCountByTaxon(taxonId);    
     }
 
-    public int GetObservationCountByTaxon(int taxonID)
-    {
-        return _db.GetObservationCountByTaxon(taxonID);
-    }
+    private static ObservationViewModel ToViewModel(Observation o) =>
+        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
+            // Picture is inlined as a data URI (2 MB becomes ~2.7 MB of HTML); use a file handler if lists should show pictures.
+            o.Picture is null ? null : $"data:{o.Picture.ContentType};base64,{Convert.ToBase64String(o.Picture.Data)}");
 }

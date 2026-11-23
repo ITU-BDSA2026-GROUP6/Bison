@@ -1,4 +1,4 @@
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Bison.Razor.Verified;
 

@@ -1,4 +1,4 @@
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 public class BisonDbContext : IdentityDbContext<BisonUser>

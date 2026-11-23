@@ -1,4 +1,4 @@
-namespace Bison.Razor.Models.DTOs;
+namespace Bison.Domain.Models.DTOs;
 
 public record ObservationDto(
     int ObservationId,
