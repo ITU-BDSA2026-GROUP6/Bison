@@ -17,7 +17,8 @@ public class AppFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         var projectDir = Path.Combine(FindRepoRoot(), "src", "Bison.Razor");
-        SeedDatabase(Path.Combine(projectDir, "data"));
+        SeedDatabase(Path.Combine(
+            FindRepoRoot(), "src", "Bison.Infrastructure", "Database", "Scripts"));
 
         var startInfo = new ProcessStartInfo("dotnet", $"run --no-launch-profile --urls {BaseUrl}")
         {

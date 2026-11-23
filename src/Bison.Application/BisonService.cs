@@ -1,5 +1,4 @@
 using Bison.Razor.Models;
-using Microsoft.EntityFrameworkCore;
 public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName, string? PictureSrc = null);
 public record CommentViewModel(string Author, string Message, string Timestamp);
 public record ProposalViewModel(string Author, string Message, string Timestamp, string? TaxonName);

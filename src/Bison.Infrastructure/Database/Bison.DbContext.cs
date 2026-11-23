@@ -19,7 +19,7 @@ public class BisonDbContext : IdentityDbContext<BisonUser>
         modelBuilder.Entity<Post>().UseTptMappingStrategy();
 
         modelBuilder.Entity<Author>()
-            .HasOne(a => a.BisonUser)
+            .HasOne<BisonUser>()
             .WithOne()
             .HasForeignKey<Author>(a => a.BisonUserId)
             .OnDelete(DeleteBehavior.SetNull);
