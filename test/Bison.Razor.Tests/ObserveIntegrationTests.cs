@@ -1,4 +1,4 @@
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +19,7 @@ public sealed class ObserveIntegrationTests
         context.Users.Add(user);
         context.SaveChanges();
 
-        var service = new ObservationService(new DBFacade(new PostRepository(context)));
+        var service = new ObservationService(new PostRepository(context));
         service.AddObservation(user.Id, "Saw a heron", 7);
 
         var savedObservation = Assert.Single(context.Observations);
@@ -36,7 +36,7 @@ public sealed class ObserveIntegrationTests
         using var context = CreateContext(connection);
 
         context.Database.EnsureCreated();
-        var service = new ObservationService(new DBFacade(new PostRepository(context)));
+        var service = new ObservationService(new PostRepository(context));
         var taxons = service.GetTaxons();
 
         Assert.DoesNotContain(taxons, taxon => taxon.TaxonId == 999);

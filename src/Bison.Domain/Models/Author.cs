@@ -1,4 +1,4 @@
-namespace Bison.Razor.Models;
+namespace Bison.Domain.Models;
 
 public class Author
 {
@@ -7,7 +7,6 @@ public class Author
     public string Email { get; set; } = string.Empty;
 
     public string? BisonUserId { get; set; }
-    public BisonUser? BisonUser { get; set; }
 
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 }

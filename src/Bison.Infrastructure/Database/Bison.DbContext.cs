@@ -1,4 +1,4 @@
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 public class BisonDbContext : IdentityDbContext<BisonUser>
@@ -19,7 +19,7 @@ public class BisonDbContext : IdentityDbContext<BisonUser>
         modelBuilder.Entity<Post>().UseTptMappingStrategy();
 
         modelBuilder.Entity<Author>()
-            .HasOne(a => a.BisonUser)
+            .HasOne<BisonUser>()
             .WithOne()
             .HasForeignKey<Author>(a => a.BisonUserId)
             .OnDelete(DeleteBehavior.SetNull);

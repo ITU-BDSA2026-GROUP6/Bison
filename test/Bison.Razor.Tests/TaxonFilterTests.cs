@@ -1,6 +1,6 @@
 namespace Bison.Razor.Tests;
 
-using Bison.Razor.Models;
+using Bison.Domain.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,4 @@
-namespace Bison.Razor.Models;
+namespace Bison.Domain.Models;
 
 public class Taxon
 {

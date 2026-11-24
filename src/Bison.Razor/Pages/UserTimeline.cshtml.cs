@@ -19,7 +19,7 @@ public class UserTimelineModel : PageModel
     {
         CurrentPage = Math.Max(page, 1);
         TotalPages = Math.Max(1, (int)Math.Ceiling(
-            _service.GetObservationCountFromAuthor(author) / (double)ObservationService.PageSize));
+            _service.GetObservationCountFromAuthor(author) / (double)ObservationService.stdPageSize));
         CurrentPage = Math.Min(CurrentPage, TotalPages);
         Observations = _service.GetObservationsFromAuthor(author, CurrentPage);
         return Page();

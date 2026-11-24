@@ -29,4 +29,9 @@
     <AdditionalFiles Include="CodeMetricsConfig.txt" />
 </ItemGroup>
 
+<ItemGroup>
+  <ProjectReference Include="..\Bison.Application\Bison.Application.csproj" />
+  <ProjectReference Include="..\Bison.Infrastructure\Bison.Infrastructure.csproj" />
+</ItemGroup>
+
 </Project>

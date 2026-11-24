@@ -15,6 +15,6 @@ public static class TestHelpers
 
     public static string GetSeededDbPath()
     {
-        return Path.Combine(FindRepoRoot(), "src", "Bison.Razor", "bison.db");
+        return Path.Combine(FindRepoRoot(), "test", "Bison.Razor.Tests", "TestData", "bison.db");
     }
 }

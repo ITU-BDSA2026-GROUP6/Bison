@@ -1,6 +1,3 @@
-using System.Collections.Specialized;
-using System.Runtime.CompilerServices;
-using Bison.Razor.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -31,7 +28,7 @@ public class PublicModel : PageModel
             :   _service.GetObservationCount();
 
         TotalPages = Math.Max(1, (int)Math.Ceiling(
-            count / (double)ObservationService.PageSize));
+            count / (double)ObservationService.stdPageSize));
 
         CurrentPage = Math.Min(CurrentPage, TotalPages);
 

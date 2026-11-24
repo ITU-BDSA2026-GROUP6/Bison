@@ -1,20 +1,34 @@
-using Bison.Razor.Models;
+using Bison.Domain.Models;
+public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName, string? PictureSrc = null);
+public record CommentViewModel(string Author, string Message, string Timestamp);
+public record ProposalViewModel(string Author, string Message, string Timestamp, string? TaxonName);
 
-public class DBFacade
+
+public class ObservationService : IObservationService
 {
     private const string DateFormat = "MM/dd/yy H:mm:ss";
+    public const int stdPageSize = 32;
     private readonly IPostRepository _repo;
 
-    public DBFacade(IPostRepository repo)
+    public ObservationService(IPostRepository repo)
     {
         _repo = repo;
     }
 
+    public List<ObservationViewModel> GetObservations(int page)
+    {
+        return GetObservations(stdPageSize, page);
+    }
     public List<ObservationViewModel> GetObservations(int pageSize, int page = 1)
     {
         return _repo.GetObservations(pageSize, page).Select(ToViewModel).ToList();
     }
 
+
+    public List<ObservationViewModel> GetObservationsFromAuthor(string author, int page)
+    {
+        return GetObservationsFromAuthor(author,stdPageSize,page);
+    }
     public List<ObservationViewModel> GetObservationsFromAuthor(string author, int pageSize, int page = 1)
     {
         return _repo.GetObservationsByAuthor(author, pageSize, page).Select(ToViewModel).ToList();
@@ -64,11 +78,17 @@ public class DBFacade
         return _repo.GetTaxons();
     }
 
+
     public List<ObservationViewModel> GetObservationsByTaxon(int taxonId, int pageSize, int page = 1)
     {
         return _repo.GetObservationsByTaxon(taxonId, pageSize, page).Select(ToViewModel).ToList();   
     }
 
+
+    public List<ObservationViewModel> GetObservationsByTaxon(int taxonID, int currentpage)
+    {
+        return GetObservationsByTaxon(taxonID,stdPageSize,currentpage);
+    }
     public int GetObservationCountByTaxon(int taxonId)
     {
         return _repo.GetObservationCountByTaxon(taxonId);    
