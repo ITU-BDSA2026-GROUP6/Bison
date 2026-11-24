@@ -15,18 +15,24 @@
             @if (User?.Identity?.IsAuthenticated == true)
             {
                 <div>
-                    <a href="/obs/@(User.Identity.Name)">My Observations</a> |
-                    <a href="/">Public Observations</a> |
+                    <p>Timeline</p>
+                    <a href="/">Public Observations</a>
+                    <a href="/obs/@(User.Identity.Name)">My Observations</a>
+                </div>
+
+                <div>
+                    <p>Post<p/>
+                    <a href="/Observe">New Observation</a>
+                </div>
+
+                <div>
+                    <p>Account<p/>
                     <a href="/Account/Username">Change username</a> |
                     <a href="Identity/Account/Logout">Logout [@(User.Identity.Name)]</a>
                     <a href="/Account/AboutMe">About Me</a>
                 </div>
-
-                <div>
-                    <a href="/Observe">New Observation</a>
-                </div>
             }
-            else
+            else 
             {
                 <div>
                     <a href="/">Public Observations</a> |
