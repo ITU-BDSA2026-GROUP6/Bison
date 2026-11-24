@@ -185,4 +185,45 @@ public class PostRepository : IPostRepository
     {
         return _context.Taxons.ToList();
     }
+
+
+    public PersonalData? GetPersonalData(string userId)
+    {
+        var user = _context.Users
+            .AsNoTracking()
+            .SingleOrDefault(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        var author = _context.Authors
+            .AsNoTracking()
+            .SingleOrDefault(a => a.BisonUserId == userId);
+
+        var posts = _context.Observations
+            .AsNoTracking()
+            .Include(o => o.Taxon)
+            .Include(o => o.Picture)
+            .Where(o => o.Author.BisonUserId == userId)
+            .OrderByDescending(o => o.TimeStamp)
+            .ToList();
+
+        var comments = _context.Comments
+            .AsNoTracking()
+            .Where(c => c.Author.BisonUserId == userId)
+            .OrderByDescending(c => c.TimeStamp)
+            .ToList();
+
+        var proposals = _context.Proposals
+            .AsNoTracking()
+            .Include(p => p.Taxon)
+            .Where(p => p.Author.BisonUserId == userId)
+            .OrderByDescending(p => p.TimeStamp)
+            .ToList();
+
+        return new PersonalData(user.Id, author?.Name ?? user.UserName,
+            user.Email ?? author?.Email ?? string.Empty, posts, comments, proposals);
+    }
 }

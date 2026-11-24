@@ -94,6 +94,11 @@ public class ObservationService : IObservationService
         return _repo.GetObservationCountByTaxon(taxonId);    
     }
 
+    public PersonalData? GetPersonalData(string userId)
+    {
+        return _repo.GetPersonalData(userId);
+    }
+
     private static ObservationViewModel ToViewModel(Observation o) =>
         new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
             // Picture is inlined as a data URI (2 MB becomes ~2.7 MB of HTML); use a file handler if lists should show pictures.
