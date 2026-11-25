@@ -24,7 +24,7 @@ public class TaxonFilterTests
         var bison = new Taxon { dwc_TaxonID = "bison", VernacularName = "Bison", Parent = bovidae };
         var aves = new Taxon { dwc_TaxonID = "aves", VernacularName = "Birds" };
 
-        var adrian = new Author { Name = "Adrian", Email = "adrian@example.com" };
+        var adrian = new Author { UserName = "Adrian", Email = "adrian@example.com" };
         context.Observations.AddRange(
             new Observation { Author = adrian, Text = "Saw a bison", TimeStamp = DateTime.UtcNow, Taxon = bison },
             new Observation { Author = adrian, Text = "Saw some bovid", TimeStamp = DateTime.UtcNow, Taxon = bovidae },

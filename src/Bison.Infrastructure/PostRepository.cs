@@ -16,7 +16,7 @@ public class PostRepository : IPostRepository
         return Page(_context.Observations, pageSize, page);
     }
 
-    private Author GetOrCreateAuthor(string userId)
+    private Author GetAuthor(string userId)
     {
         var user = _context.Users.SingleOrDefault(u => u.Id == userId)
          ?? throw new InvalidOperationException("Account not found.");
@@ -26,26 +26,12 @@ public class PostRepository : IPostRepository
             throw new InvalidOperationException("Account has no username.");
         }
 
-        var author = _context.Authors
-            .SingleOrDefault(a => a.BisonUserId == userId);
-
-        if (author == null)
-        {
-            author = new Author
-            {
-                BisonUserId = user.Id,
-                Name = user.UserName
-            };
-
-        _context.Authors.Add(author);
-        }
-
-        return author;
+        return user;
     }
 
     public List<Observation> GetObservationsByAuthor(string authorName, int pageSize, int page)
     {
-        return Page(_context.Observations.Where(o => o.Author.Name == authorName), pageSize, page);
+        return Page(_context.Observations.Where(o => o.Author.UserName! == authorName), pageSize, page);
     }
 
     public List<Observation> GetObservationsByTaxon(int taxonId, int pageSize, int page)
@@ -88,7 +74,7 @@ public class PostRepository : IPostRepository
     public int GetObservationCount() => _context.Observations.Count();
 
     public int GetObservationCountByAuthor(string authorName) =>
-        _context.Observations.Count(o => o.Author.Name == authorName);
+        _context.Observations.Count(o => o.Author.UserName! == authorName);
 
     public Observation? GetObservationById(int id)
     {
@@ -122,7 +108,7 @@ public class PostRepository : IPostRepository
 
     public void AddObservation(string userId, string text, int? taxonId = null, Picture? picture = null)
     {
-        var author = GetOrCreateAuthor(userId);
+        var author = GetAuthor(userId);
 
         var taxon = _context.Taxons.Find(taxonId);
         if (taxon is null && taxonId.HasValue)
@@ -136,7 +122,7 @@ public class PostRepository : IPostRepository
 
     public void AddComment(string userId, int observationId, string text)
     {
-        var author = GetOrCreateAuthor(userId);
+        var author = GetAuthor(userId);
 
         var observation = _context.Observations.Find(observationId);
         if (observation is null)
@@ -156,7 +142,7 @@ public class PostRepository : IPostRepository
 
     public void AddProposal(string userId, int observationId, int taxonId, string text)
     {
-        var author = GetOrCreateAuthor(userId);
+        var author = GetAuthor(userId);
 
         var observation = _context.Observations.Find(observationId);
         if (observation is null)
@@ -198,32 +184,33 @@ public class PostRepository : IPostRepository
             return null;
         }
 
-        var author = _context.Authors
-            .AsNoTracking()
-            .SingleOrDefault(a => a.BisonUserId == userId);
-
         var posts = _context.Observations
             .AsNoTracking()
             .Include(o => o.Taxon)
             .Include(o => o.Picture)
-            .Where(o => o.Author.BisonUserId == userId)
+            .Where(o => o.AuthorId == userId)
             .OrderByDescending(o => o.TimeStamp)
             .ToList();
 
         var comments = _context.Comments
             .AsNoTracking()
-            .Where(c => c.Author.BisonUserId == userId)
+            .Where(c => c.AuthorId == userId)
             .OrderByDescending(c => c.TimeStamp)
             .ToList();
 
         var proposals = _context.Proposals
             .AsNoTracking()
             .Include(p => p.Taxon)
-            .Where(p => p.Author.BisonUserId == userId)
+            .Where(p => p.AuthorId == userId)
             .OrderByDescending(p => p.TimeStamp)
             .ToList();
 
-        return new PersonalData(user.Id, author?.Name ?? user.UserName,
-            user.Email ?? author?.Email ?? string.Empty, posts, comments, proposals);
+        return new PersonalData(
+            user.Id,
+            user.UserName,
+            user.Email ?? string.Empty,
+            posts,
+            comments,
+            proposals);
     }
 }
