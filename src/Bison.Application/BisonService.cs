@@ -41,14 +41,14 @@ public class ObservationService : IObservationService
     public List<CommentViewModel> GetCommentsForObservation(int observationId)
     {
         return _repo.GetCommentsForObservation(observationId)
-            .Select(c => new CommentViewModel(c.Author.Name, c.Text, c.TimeStamp.ToString(DateFormat)))
+            .Select(c => new CommentViewModel(c.Author.UserName!, c.Text, c.TimeStamp.ToString(DateFormat)))
             .ToList();
     }
 
     public List<ProposalViewModel> GetProposalsForObservation(int observationId)
     {
         return _repo.GetProposalsForObservation(observationId)
-            .Select(p => new ProposalViewModel(p.Author.Name, p.Text, p.TimeStamp.ToString(DateFormat), p.Taxon.VernacularName))
+            .Select(p => new ProposalViewModel(p.Author.UserName!, p.Text, p.TimeStamp.ToString(DateFormat), p.Taxon.VernacularName))
             .ToList();
     }
 
@@ -95,7 +95,7 @@ public class ObservationService : IObservationService
     }
 
     private static ObservationViewModel ToViewModel(Observation o) =>
-        new(o.PostId, o.Author.Name, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
+        new(o.PostId, o.Author.UserName!, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
             // Picture is inlined as a data URI (2 MB becomes ~2.7 MB of HTML); use a file handler if lists should show pictures.
             o.Picture is null ? null : $"data:{o.Picture.ContentType};base64,{Convert.ToBase64String(o.Picture.Data)}");
 }

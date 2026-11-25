@@ -1,7 +1,7 @@
 using Bison.Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-public class BisonDbContext : IdentityDbContext<BisonUser>
+public class BisonDbContext : IdentityDbContext<Author>
 {
     public DbSet<Post> Posts { get; set; }
     public DbSet<Observation> Observations { get; set; }
@@ -18,10 +18,10 @@ public class BisonDbContext : IdentityDbContext<BisonUser>
         // A tabel pr class tabel
         modelBuilder.Entity<Post>().UseTptMappingStrategy();
 
-        modelBuilder.Entity<Author>()
-            .HasOne<BisonUser>()
-            .WithOne()
-            .HasForeignKey<Author>(a => a.BisonUserId)
-            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<Post>()
+            .HasOne(p => p.Author)
+            .WithMany(a => a.Posts)
+            .HasForeignKey(p => p.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

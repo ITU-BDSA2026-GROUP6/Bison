@@ -1,9 +1,10 @@
+@using Bison.Domain.Models
 @{
     Layout = "_Layout.cshtml";
 }
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<BisonUser> SignInManager
-@inject UserManager<BisonUser> UserManager
+@inject SignInManager<Author> SignInManager
+@inject UserManager<Author> UserManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))

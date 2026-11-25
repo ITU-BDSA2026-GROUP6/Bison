@@ -1,3 +1,4 @@
+using Bison.Domain.Models;
 using System.Net;
 using System.Text.RegularExpressions;
 using Bison.Razor.Models;
@@ -58,7 +59,7 @@ public class UserIdentityIntegrationTests : IClassFixture<WebApplicationFactory<
             $"Unexpected status: {response.StatusCode}");
 
         using var scope = _factory.Services.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
 
         var created = await userManager.FindByEmailAsync("eve@example.com");
         Assert.NotNull(created);
@@ -68,10 +69,10 @@ public class UserIdentityIntegrationTests : IClassFixture<WebApplicationFactory<
     public async Task SignInManager_ValidCredentials_Succeeds()
     {
         using var scope = _factory.Services.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
-        var signInManager = scope.ServiceProvider.GetRequiredService<SignInManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
+        var signInManager = scope.ServiceProvider.GetRequiredService<SignInManager<Author>>();
 
-        var user = new BisonUser
+        var user = new Author
         {
             UserName = "frank",
             Email = "frank@example.com",
@@ -95,10 +96,10 @@ public class UserIdentityIntegrationTests : IClassFixture<WebApplicationFactory<
     public async Task SignInManager_InvalidCredentials_Fails()
     {
         using var scope = _factory.Services.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
-        var signInManager = scope.ServiceProvider.GetRequiredService<SignInManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
+        var signInManager = scope.ServiceProvider.GetRequiredService<SignInManager<Author>>();
 
-        var user = new BisonUser
+        var user = new Author
         {
             UserName = "gina",
             Email = "gina@example.com",

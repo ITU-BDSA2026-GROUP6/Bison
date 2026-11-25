@@ -15,7 +15,7 @@ public sealed class ObserveIntegrationTests
 
         context.Database.EnsureCreated();
         context.Taxons.Add(new Taxon { TaxonId = 7, VernacularName = "Heron" });
-        var user = new BisonUser { UserName = "Adrian" };
+        var user = new Author { UserName = "Adrian" };
         context.Users.Add(user);
         context.SaveChanges();
 
@@ -25,7 +25,7 @@ public sealed class ObserveIntegrationTests
         var savedObservation = Assert.Single(context.Observations);
         Assert.Equal("Saw a heron", savedObservation.Text);
         Assert.Equal(7, savedObservation.TaxonId);
-        Assert.Equal(user.Id, savedObservation.Author.BisonUserId);
+        Assert.Equal(user.Id, savedObservation.AuthorId);
     }
 
     [Fact]

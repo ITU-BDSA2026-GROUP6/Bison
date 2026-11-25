@@ -16,99 +16,7 @@ namespace Bison.Razor.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
 
-            modelBuilder.Entity("Bison.Razor.Models.Author", b =>
-                {
-                    b.Property<int>("AuthorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("BisonUserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("AuthorId");
-
-                    b.HasIndex("BisonUserId")
-                        .IsUnique();
-
-                    b.ToTable("Authors");
-                });
-
-            modelBuilder.Entity("Bison.Razor.Models.Picture", b =>
-                {
-                    b.Property<int>("pictureId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
-                    b.HasKey("pictureId");
-
-                    b.ToTable("Picture");
-                });
-
-            modelBuilder.Entity("Bison.Razor.Models.Post", b =>
-                {
-                    b.Property<int>("PostId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("PostId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Posts");
-
-                    b.UseTptMappingStrategy();
-                });
-
-            modelBuilder.Entity("Bison.Razor.Models.Taxon", b =>
-                {
-                    b.Property<int>("TaxonId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("VernacularName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("dwc_TaxonID")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("TaxonId");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("Taxons");
-                });
-
-            modelBuilder.Entity("BisonUser", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Author", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -170,6 +78,74 @@ namespace Bison.Razor.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Bison.Domain.Models.Picture", b =>
+                {
+                    b.Property<int>("pictureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("pictureId");
+
+                    b.ToTable("Picture");
+                });
+
+            modelBuilder.Entity("Bison.Domain.Models.Post", b =>
+                {
+                    b.Property<int>("PostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("PostId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Posts");
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("Bison.Domain.Models.Taxon", b =>
+                {
+                    b.Property<int>("TaxonId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("VernacularName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("dwc_TaxonID")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TaxonId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Taxons");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -304,9 +280,9 @@ namespace Bison.Razor.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Comment", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Comment", b =>
                 {
-                    b.HasBaseType("Bison.Razor.Models.Post");
+                    b.HasBaseType("Bison.Domain.Models.Post");
 
                     b.Property<int>("ObservationId")
                         .HasColumnType("INTEGER");
@@ -316,9 +292,9 @@ namespace Bison.Razor.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Observation", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Observation", b =>
                 {
-                    b.HasBaseType("Bison.Razor.Models.Post");
+                    b.HasBaseType("Bison.Domain.Models.Post");
 
                     b.Property<int?>("PictureId")
                         .HasColumnType("INTEGER");
@@ -333,9 +309,9 @@ namespace Bison.Razor.Migrations
                     b.ToTable("Observations");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Proposal", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Proposal", b =>
                 {
-                    b.HasBaseType("Bison.Razor.Models.Post");
+                    b.HasBaseType("Bison.Domain.Models.Post");
 
                     b.Property<int>("ObservationId")
                         .HasColumnType("INTEGER");
@@ -350,19 +326,9 @@ namespace Bison.Razor.Migrations
                     b.ToTable("Proposals");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Author", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Post", b =>
                 {
-                    b.HasOne("BisonUser", "BisonUser")
-                        .WithOne()
-                        .HasForeignKey("Bison.Razor.Models.Author", "BisonUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("BisonUser");
-                });
-
-            modelBuilder.Entity("Bison.Razor.Models.Post", b =>
-                {
-                    b.HasOne("Bison.Razor.Models.Author", "Author")
+                    b.HasOne("Bison.Domain.Models.Author", "Author")
                         .WithMany("Posts")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -371,9 +337,9 @@ namespace Bison.Razor.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Taxon", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Taxon", b =>
                 {
-                    b.HasOne("Bison.Razor.Models.Taxon", "Parent")
+                    b.HasOne("Bison.Domain.Models.Taxon", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
 
@@ -391,7 +357,7 @@ namespace Bison.Razor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BisonUser", null)
+                    b.HasOne("Bison.Domain.Models.Author", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -400,7 +366,7 @@ namespace Bison.Razor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BisonUser", null)
+                    b.HasOne("Bison.Domain.Models.Author", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -415,7 +381,7 @@ namespace Bison.Razor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BisonUser", null)
+                    b.HasOne("Bison.Domain.Models.Author", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -424,43 +390,43 @@ namespace Bison.Razor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BisonUser", null)
+                    b.HasOne("Bison.Domain.Models.Author", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Comment", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Comment", b =>
                 {
-                    b.HasOne("Bison.Razor.Models.Observation", "Observation")
+                    b.HasOne("Bison.Domain.Models.Observation", "Observation")
                         .WithMany("Comments")
                         .HasForeignKey("ObservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bison.Razor.Models.Post", null)
+                    b.HasOne("Bison.Domain.Models.Post", null)
                         .WithOne()
-                        .HasForeignKey("Bison.Razor.Models.Comment", "PostId")
+                        .HasForeignKey("Bison.Domain.Models.Comment", "PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Observation");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Observation", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Observation", b =>
                 {
-                    b.HasOne("Bison.Razor.Models.Picture", "Picture")
+                    b.HasOne("Bison.Domain.Models.Picture", "Picture")
                         .WithMany()
                         .HasForeignKey("PictureId");
 
-                    b.HasOne("Bison.Razor.Models.Post", null)
+                    b.HasOne("Bison.Domain.Models.Post", null)
                         .WithOne()
-                        .HasForeignKey("Bison.Razor.Models.Observation", "PostId")
+                        .HasForeignKey("Bison.Domain.Models.Observation", "PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bison.Razor.Models.Taxon", "Taxon")
+                    b.HasOne("Bison.Domain.Models.Taxon", "Taxon")
                         .WithMany("Observations")
                         .HasForeignKey("TaxonId");
 
@@ -469,21 +435,21 @@ namespace Bison.Razor.Migrations
                     b.Navigation("Taxon");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Proposal", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Proposal", b =>
                 {
-                    b.HasOne("Bison.Razor.Models.Observation", "Observation")
+                    b.HasOne("Bison.Domain.Models.Observation", "Observation")
                         .WithMany("Proposals")
                         .HasForeignKey("ObservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bison.Razor.Models.Post", null)
+                    b.HasOne("Bison.Domain.Models.Post", null)
                         .WithOne()
-                        .HasForeignKey("Bison.Razor.Models.Proposal", "PostId")
+                        .HasForeignKey("Bison.Domain.Models.Proposal", "PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bison.Razor.Models.Taxon", "Taxon")
+                    b.HasOne("Bison.Domain.Models.Taxon", "Taxon")
                         .WithMany("Proposals")
                         .HasForeignKey("TaxonId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -494,12 +460,12 @@ namespace Bison.Razor.Migrations
                     b.Navigation("Taxon");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Author", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Author", b =>
                 {
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Taxon", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Taxon", b =>
                 {
                     b.Navigation("Children");
 
@@ -508,7 +474,7 @@ namespace Bison.Razor.Migrations
                     b.Navigation("Proposals");
                 });
 
-            modelBuilder.Entity("Bison.Razor.Models.Observation", b =>
+            modelBuilder.Entity("Bison.Domain.Models.Observation", b =>
                 {
                     b.Navigation("Comments");
 

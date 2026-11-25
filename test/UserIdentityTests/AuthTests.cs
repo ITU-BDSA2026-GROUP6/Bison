@@ -1,3 +1,4 @@
+using Bison.Domain.Models;
 public class AuthTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
@@ -11,9 +12,9 @@ public class AuthTests : IClassFixture<WebApplicationFactory<Program>>
     public async Task UserManager_CanCreateUser()
     {
         using var scope = _factory.Services.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
 
-        var user = new BisonUser
+        var user = new Author
         {
             UserName = "eve",
             Email = "eve@example.com"
