@@ -1,3 +1,4 @@
+using Bison.Domain.Models;
 using Bison.Razor.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ public class UserIdentityUnitTests
         services.AddDbContext<BisonDbContext>(options =>
             options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
-        services.AddIdentityCore<BisonUser>()
+        services.AddIdentityCore<Author>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<BisonDbContext>()
             .AddDefaultTokenProviders();
@@ -32,9 +33,9 @@ public class UserIdentityUnitTests
         using var provider = BuildServices();
         using var scope = provider.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
 
-        var user = new BisonUser
+        var user = new Author
         {
             UserName = "alice",
             Email = "alice@example.com"
@@ -52,9 +53,9 @@ public class UserIdentityUnitTests
         using var provider = BuildServices();
         using var scope = provider.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
 
-        var user = new BisonUser
+        var user = new Author
         {
             UserName = "bob",
             Email = "bob@example.com"
@@ -72,9 +73,9 @@ public class UserIdentityUnitTests
         using var provider = BuildServices();
         using var scope = provider.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
 
-        var user = new BisonUser
+        var user = new Author
         {
             UserName = "carol",
             Email = "carol@example.com"
@@ -97,15 +98,15 @@ public class UserIdentityUnitTests
         using var provider = BuildServices();
         using var scope = provider.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BisonUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Author>>();
 
-        var first = new BisonUser
+        var first = new Author
         {
             UserName = "dan",
             Email = "dan@example.com"
         };
 
-        var second = new BisonUser
+        var second = new Author
         {
             UserName = "daniel",
             Email = "dan@example.com"

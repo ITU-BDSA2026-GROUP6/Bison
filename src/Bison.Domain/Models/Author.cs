@@ -1,12 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace Bison.Domain.Models;
 
-public class Author
+public class Author : IdentityUser
 {
-    public int AuthorId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-
-    public string? BisonUserId { get; set; }
-
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 }

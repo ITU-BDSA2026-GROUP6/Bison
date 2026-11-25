@@ -1,3 +1,4 @@
+using Bison.Domain.Models;
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
@@ -19,10 +20,10 @@ namespace Bison.Razor.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<BisonUser> _signInManager;
+        private readonly SignInManager<Author> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<BisonUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<Author> signInManager, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;

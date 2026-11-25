@@ -20,16 +20,12 @@ public class ObservationServiceTests
         context.Database.EnsureCreated();
 
         // Minimal test data, replace with DbInitializer once 1d is done
-        var user = new BisonUser
+        var user = new Author
         {
             Id = UserId, UserName = "Adrian", Email = "adrian@example.com"
         };
         context.Users.Add(user);
-        var adrian = new Author
-        {
-            Name = "Adrian", Email = "adrian@example.com", BisonUserId = user.Id
-        };
-        context.Observations.Add(new Observation { Author = adrian, Text = "Saw a heron", TimeStamp = DateTime.UtcNow });
+        context.Observations.Add(new Observation { Author = user, Text = "Saw a heron", TimeStamp = DateTime.UtcNow });
         context.SaveChanges();
         _context = context;
 

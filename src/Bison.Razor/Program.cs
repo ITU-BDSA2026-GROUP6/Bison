@@ -1,3 +1,4 @@
+using Bison.Domain.Models;
 using System;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +15,7 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IObservationService, ObservationService>();
 
 //Password requirements
-builder.Services.AddDefaultIdentity<BisonUser>(options =>
+builder.Services.AddDefaultIdentity<Author>(options =>
 {
     options.User.RequireUniqueEmail = true;
     options.SignIn.RequireConfirmedAccount = true;
