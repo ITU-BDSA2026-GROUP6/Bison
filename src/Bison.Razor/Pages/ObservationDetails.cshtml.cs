@@ -87,6 +87,15 @@ public class ObservationDetailsModel : PageModel
         _service.AddProposal(userId, id, SelectedTaxonId.Value, ProposalText);
         return RedirectToPage(new { id });
     }
+    public IActionResult OnPostLike(int id, bool isLike)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
+        
+        _service.Like (userId, id, isLike);
+        return RedirectToPage (new {id});
+    }
 
     private void LoadTaxons()
     {

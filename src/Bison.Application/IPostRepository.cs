@@ -19,6 +19,7 @@ public interface IPostRepository
 
     void AddComment(string userId, int observationId, string text);
     void AddProposal(string userId, int observationId, int taxonId, string text);
+    void Like(string userId, int postId, bool isLike);
 
     List<Taxon> GetTaxons();
 }

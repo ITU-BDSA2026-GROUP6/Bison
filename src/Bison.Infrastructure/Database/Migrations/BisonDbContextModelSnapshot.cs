@@ -80,6 +80,24 @@ namespace Bison.Razor.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Bison.Domain.Models.Like", b =>
+                {
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsLike")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PostId", "AuthorId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Likes");
+                });
+
             modelBuilder.Entity("Bison.Domain.Models.Picture", b =>
                 {
                     b.Property<int>("pictureId")
@@ -326,6 +344,25 @@ namespace Bison.Razor.Migrations
                     b.ToTable("Proposals");
                 });
 
+            modelBuilder.Entity("Bison.Domain.Models.Like", b =>
+                {
+                    b.HasOne("Bison.Domain.Models.Author", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Bison.Domain.Models.Post", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("Bison.Domain.Models.Post", b =>
                 {
                     b.HasOne("Bison.Domain.Models.Author", "Author")
@@ -463,6 +500,11 @@ namespace Bison.Razor.Migrations
             modelBuilder.Entity("Bison.Domain.Models.Author", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("Bison.Domain.Models.Post", b =>
+                {
+                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("Bison.Domain.Models.Taxon", b =>

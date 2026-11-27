@@ -61,10 +61,11 @@ public class PostRepository : IPostRepository
         return TaxonFilter.FilterBy(root, observations);
     }
 
-    private static List<Observation> Page(IQueryable<Observation> query, int pageSize, int page)
+        private static List<Observation> Page(IQueryable<Observation> query, int pageSize, int page)
     {
         return query
             .Include(o => o.Author)
+            .Include(o => o.Likes)
             .OrderByDescending(o => o.TimeStamp)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -76,10 +77,11 @@ public class PostRepository : IPostRepository
     public int GetObservationCountByAuthor(string authorName) =>
         _context.Observations.Count(o => o.Author.UserName! == authorName);
 
-    public Observation? GetObservationById(int id)
+        public Observation? GetObservationById(int id)
     {
         return _context.Observations
             .Include(o => o.Author)
+            .Include(o => o.Likes)
             .Include(o => o.Taxon)
             .Include(o => o.Picture)
             .Include(o => o.Comments).ThenInclude(c => c.Author)
@@ -164,6 +166,24 @@ public class PostRepository : IPostRepository
             Text = text,
             TimeStamp = DateTime.UtcNow
         });
+        _context.SaveChanges();
+    }
+
+    public void Like (string userId, int postId, bool isLike)
+    {
+        var author = GetAuthor(userId);
+        if (_context.Posts.Find(postId) is null)
+            throw new ArgumentException($"Post with ID {postId} does not exist.");
+        
+        var like = _context.Likes.Find(postId, author.Id);
+        if (like is null)
+            _context.Likes.Add(new Like { PostId = postId, Author = author, IsLike = isLike });
+        else if (like.IsLike == isLike)
+            _context.Likes.Remove(like);
+        else
+        
+            like.IsLike = isLike;
+        
         _context.SaveChanges();
     }
 
