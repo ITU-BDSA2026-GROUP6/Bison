@@ -1,5 +1,5 @@
 using Bison.Domain.Models;
-public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName, string? PictureSrc = null);
+public record ObservationViewModel(int ObservationId, string Author, string Message, string Timestamp, string? VernacularName, string? PictureSrc = null, int Likes = 0, int Dislikes = 0);
 public record CommentViewModel(string Author, string Message, string Timestamp);
 public record ProposalViewModel(string Author, string Message, string Timestamp, string? TaxonName);
 
@@ -67,6 +67,11 @@ public class ObservationService : IObservationService
         _repo.AddProposal(userId, observationId, taxonId, text);
     }
 
+        public void Like(string userId, int postId, bool isLike)
+    {
+        _repo.Like(userId, postId, isLike);
+    }
+
     public ObservationViewModel? GetObservationById(int id)
     {
         var o = _repo.GetObservationById(id);
@@ -89,18 +94,17 @@ public class ObservationService : IObservationService
     {
         return GetObservationsByTaxon(taxonID,stdPageSize,currentpage);
     }
-    public int GetObservationCountByTaxon(int taxonId)
+       public int GetObservationCountByTaxon(int taxonId)
     {
         return _repo.GetObservationCountByTaxon(taxonId);    
     }
 
-    public PersonalData? GetPersonalData(string userId)
+        public PersonalData? GetPersonalData(string userId)
     {
         return _repo.GetPersonalData(userId);
     }
 
     private static ObservationViewModel ToViewModel(Observation o) =>
         new(o.PostId, o.Author.UserName!, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
-            // Picture is inlined as a data URI (2 MB becomes ~2.7 MB of HTML); use a file handler if lists should show pictures.
-            o.Picture is null ? null : $"data:{o.Picture.ContentType};base64,{Convert.ToBase64String(o.Picture.Data)}");
+            o.Picture is null ? null : $"data:{o.Picture.ContentType};base64,{Convert.ToBase64String(o.Picture.Data)}", o.Likes.Count(v => v.IsLike), o.Likes.Count(v => !v.IsLike));
 }

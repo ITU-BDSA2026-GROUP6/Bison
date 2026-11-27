@@ -26,6 +26,13 @@ else
     <p>@Model.Observation.Message</p>
     <small>@Model.Observation.Timestamp</small>
 
+    <form method="post" asp-page-handler="Like">
+        <button name="isLike" value="true" aria-label="Like">👍 
+    @Model.Observation.Likes</button>
+        <button name="isLike" value="false" aria-label="Dislike">👎 
+    @Model.Observation.Dislikes</button>
+    </form>
+
     if (Model.Observation.PictureSrc is not null)
     {
         <img src="@Model.Observation.PictureSrc" alt="Picture of the observed animal" style="max-width: 100%" />

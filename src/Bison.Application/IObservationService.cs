@@ -14,6 +14,7 @@ public interface IObservationService
 
     void AddComment(string userId, int observationId, string text);
     void AddProposal(string userId, int observationId, int taxonId, string text);
+    void Like (string userId, int postId, bool isLike);
 
     public List<Taxon> GetTaxons();
 

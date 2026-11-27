@@ -10,6 +10,8 @@ public class BisonDbContext : IdentityDbContext<Author>
     public DbSet<Taxon> Taxons { get; set; }
     public DbSet<Author> Authors { get; set; }
 
+    public DbSet<Like> Likes { get; set;}
+
     public BisonDbContext(DbContextOptions<BisonDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,5 +25,8 @@ public class BisonDbContext : IdentityDbContext<Author>
             .WithMany(a => a.Posts)
             .HasForeignKey(p => p.AuthorId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Like>()
+            .HasKey(l => new {l.PostId, l.AuthorId});
     }
 }
