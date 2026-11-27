@@ -8,7 +8,8 @@ public record PersonalData
     string Email,
     IReadOnlyList<Observation> Posts,
     IReadOnlyList<Comment> Comments,
-    IReadOnlyList<Proposal> Proposals
+    IReadOnlyList<Proposal> Proposals,
+    IReadOnlyList<Like> Likes
 );
 public interface IPostRepository
 {
