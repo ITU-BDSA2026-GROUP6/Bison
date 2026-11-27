@@ -79,3 +79,20 @@ else
         }
     </ul>
 }
+
+<h3>My likes</h3>
+@if (Model.Data.Likes.Count == 0)
+{
+    <p>No likes.</p>
+}
+else
+{
+    <ul>
+        @foreach (var like in Model.Data.Likes)
+        {
+            <li>
+                @(like.IsLike ? "Liked" : "Disliked") the post: "@like.Post.Text"
+            </li>
+        }
+    </ul>
+}

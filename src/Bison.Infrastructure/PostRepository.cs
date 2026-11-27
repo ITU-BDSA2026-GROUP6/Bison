@@ -225,12 +225,19 @@ public class PostRepository : IPostRepository
             .OrderByDescending(p => p.TimeStamp)
             .ToList();
 
+        var likes = _context.Likes
+            .AsNoTracking()
+            .Include(l => l.Post)
+            .Where(l => l.AuthorId == userId)
+            .ToList();
+
         return new PersonalData(
             user.Id,
             user.UserName,
             user.Email ?? string.Empty,
             posts,
             comments,
-            proposals);
+            proposals,
+            likes);
     }
 }
