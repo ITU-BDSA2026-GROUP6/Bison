@@ -1,0 +1,81 @@
+@page "/Account/AboutMe"
+@model Bison.Razor.Pages.Account.AboutMeModel
+
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "About Me";
+}
+
+<h2>About Me</h2>
+
+<dl>
+    <dt>Email address</dt>
+    <dd>@(Model.Data.Email ?? "Not provided")</dd>
+
+    <dt>Username</dt>
+    <dd>@(Model.Data.Username ?? "Not provided")</dd>
+
+    <dt>Account identifier</dt>
+    <dd>@Model.Data.UserId</dd>
+</dl>
+
+<h3>My posts</h3>
+@if (Model.Data.Posts.Count == 0)
+{
+    <p>No posts.</p>
+}
+else
+{
+    <ul>
+        @foreach (var post in Model.Data.Posts)
+        {
+            <li>
+                <p>@post.Text</p>
+                <small>@post.TimeStamp — @(post.Taxon?.VernacularName ?? "No taxon")</small>
+            </li>
+            @if (post.Picture is not null)
+            {
+                <img src="data:@(post.Picture.ContentType);base64,@(Convert.ToBase64String(post.Picture.Data))"
+                    alt="Picture attached to observation" />
+            }
+        }
+    </ul>
+}
+
+<h3>My comments</h3>
+@if (Model.Data.Comments.Count == 0)
+{
+    <p>No comments.</p>
+}
+else
+{
+    <ul>
+        @foreach (var comment in Model.Data.Comments)
+        {
+            <li>
+                <p>@comment.Text</p>
+                <small>@comment.TimeStamp</small>
+            </li>
+        }
+    </ul>
+}
+<h3>My proposals</h3>
+@if (Model.Data.Proposals.Count == 0)
+{
+    <p>No proposals.</p>
+}
+else
+{
+    <ul>
+        @foreach (var proposal in Model.Data.Proposals)
+        {
+            <li>
+                <p>@proposal.Text</p>
+                <small>
+                    @proposal.TimeStamp — @(proposal.Taxon?.VernacularName ?? "No taxon")
+                    — Observation #@proposal.ObservationId
+                </small>
+            </li>
+        }
+    </ul>
+}

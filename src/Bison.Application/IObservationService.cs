@@ -20,4 +20,6 @@ public interface IObservationService
     public int GetObservationCountByTaxon(int taxonID);
 
     public List<ObservationViewModel> GetObservationsByTaxon(int taxonID, int currentpage);
+
+    PersonalData? GetPersonalData(string userId);
 }
