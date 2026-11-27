@@ -94,13 +94,12 @@ public class ObservationService : IObservationService
     {
         return GetObservationsByTaxon(taxonID,stdPageSize,currentpage);
     }
-    public int GetObservationCountByTaxon(int taxonId)
+       public int GetObservationCountByTaxon(int taxonId)
     {
         return _repo.GetObservationCountByTaxon(taxonId);    
     }
 
-        private static ObservationViewModel ToViewModel(Observation o) =>
-    public PersonalData? GetPersonalData(string userId)
+        public PersonalData? GetPersonalData(string userId)
     {
         return _repo.GetPersonalData(userId);
     }
@@ -108,5 +107,4 @@ public class ObservationService : IObservationService
     private static ObservationViewModel ToViewModel(Observation o) =>
         new(o.PostId, o.Author.UserName!, o.Text, o.TimeStamp.ToString(DateFormat), o.Taxon?.VernacularName,
             o.Picture is null ? null : $"data:{o.Picture.ContentType};base64,{Convert.ToBase64String(o.Picture.Data)}", o.Likes.Count(v => v.IsLike), o.Likes.Count(v => !v.IsLike));
-            
 }
